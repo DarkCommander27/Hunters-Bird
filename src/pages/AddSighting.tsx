@@ -8,6 +8,7 @@ import {
   XMarkIcon,
   CheckIcon,
   SparklesIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
 import { useSettings } from '../hooks/useSettings';
@@ -76,9 +77,18 @@ export function AddSighting() {
           species: aiSuggestion.species,
           confidence: aiSuggestion.confidence,
           rationale: aiSuggestion.rationale,
+          inaturalistTaxon: aiSuggestion.inaturalistTaxon,
         }
       : aiSuggestion.alternatives.find((candidate) => candidate.species.id === selectedSpecies.id)
     : undefined;
+  const displayedAiCandidate = selectedAiCandidate ?? (aiSuggestion
+    ? {
+        species: aiSuggestion.species,
+        confidence: aiSuggestion.confidence,
+        rationale: aiSuggestion.rationale,
+        inaturalistTaxon: aiSuggestion.inaturalistTaxon,
+      }
+    : undefined);
 
   async function captureGps() {
     if (!settings.gpsEnabled) return;
@@ -130,6 +140,7 @@ export function AddSighting() {
         identificationConfidence: isKnownSighting && usedAiSuggestion ? selectedAiCandidate?.confidence : undefined,
         identificationSource: saveAs === 'unknown' ? 'unknown' : (usedAiSuggestion ? 'ai' : 'manual'),
         identificationRationale: isKnownSighting && usedAiSuggestion ? selectedAiCandidate?.rationale : undefined,
+        identificationTaxon: isKnownSighting && usedAiSuggestion ? selectedAiCandidate?.inaturalistTaxon : undefined,
         identificationAlternatives: isKnownSighting && aiSuggestion
           ? [
               {
@@ -260,19 +271,58 @@ export function AddSighting() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">AI Suggestion</p>
-                <p className="text-base font-semibold text-bark-100">{aiSuggestion.species.commonName}</p>
-                <p className="text-xs italic text-bark-300">{aiSuggestion.species.scientificName}</p>
+                <p className="text-base font-semibold text-bark-100">{displayedAiCandidate?.species.commonName}</p>
+                <p className="text-xs italic text-bark-300">{displayedAiCandidate?.species.scientificName}</p>
               </div>
               <span className="rounded-full bg-bark-800 px-2.5 py-1 text-xs font-semibold text-bark-200">
-                {Math.round(aiSuggestion.confidence * 100)}% match
+                {Math.round((displayedAiCandidate?.confidence ?? aiSuggestion.confidence) * 100)}% match
               </span>
             </div>
-            <p className="text-sm text-bark-200">{aiSuggestion.species.description}</p>
+            <p className="text-sm text-bark-200">{displayedAiCandidate?.species.description}</p>
             <ul className="space-y-1 text-xs text-bark-300">
-              {aiSuggestion.rationale.map((reason) => (
+              {(displayedAiCandidate?.rationale ?? aiSuggestion.rationale).map((reason) => (
                 <li key={reason}>• {reason}</li>
               ))}
             </ul>
+            {displayedAiCandidate?.inaturalistTaxon && (
+              <div className="rounded-xl border border-bark-800 bg-bark-900/40 p-3 flex gap-3 items-start">
+                {displayedAiCandidate.inaturalistTaxon.photoSquareUrl && (
+                  <img
+                    src={displayedAiCandidate.inaturalistTaxon.photoSquareUrl}
+                    alt="iNaturalist taxon"
+                    className="h-16 w-16 rounded-lg object-cover shrink-0"
+                  />
+                )}
+                <div className="min-w-0 space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">iNaturalist</p>
+                  <p className="text-sm text-bark-100">
+                    {displayedAiCandidate.inaturalistTaxon.observationsCount.toLocaleString()} public observations
+                  </p>
+                  <div className="flex flex-wrap gap-3 text-xs text-bark-300">
+                    <a
+                      href={displayedAiCandidate.inaturalistTaxon.taxonUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 hover:text-bark-100"
+                    >
+                      View taxon
+                      <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
+                    </a>
+                    {displayedAiCandidate.inaturalistTaxon.wikipediaUrl && (
+                      <a
+                        href={displayedAiCandidate.inaturalistTaxon.wikipediaUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 hover:text-bark-100"
+                      >
+                        Wikipedia
+                        <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             {aiSuggestion.alternatives.length > 0 && (
               <div className="pt-2 space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Other likely matches</p>

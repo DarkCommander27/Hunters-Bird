@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { ArrowTopRightOnSquareIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
+import { fetchINaturalistTaxon, getCachedINaturalistTaxonEntry, getINaturalistPhotoUrl } from '../lib/inaturalist';
 import { useSettings } from '../hooks/useSettings';
-import type { BirdSpecies } from '../types';
+import type { BirdSpecies, INaturalistTaxonSummary } from '../types';
 
 const HABITATS = ['Forest', 'Wetland', 'Grassland', 'Mountain', 'Urban/Suburban', 'River/Stream', 'Lake/Pond'];
 
@@ -119,6 +120,43 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 }
 
 function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () => void }) {
+  const [taxon, setTaxon] = useState<INaturalistTaxonSummary | null>(null);
+  const [taxonPhotoUrl, setTaxonPhotoUrl] = useState<string | null>(null);
+  const [taxonLoading, setTaxonLoading] = useState(true);
+
+  useEffect(() => {
+    let disposed = false;
+    let objectUrl: string | null = null;
+
+    async function loadTaxon() {
+      setTaxonLoading(true);
+      const summary = await fetchINaturalistTaxon(species);
+      if (disposed) return;
+
+      setTaxon(summary);
+      if (summary?.taxonId) {
+        const entry = await getCachedINaturalistTaxonEntry(summary.taxonId);
+        if (disposed) return;
+
+        objectUrl = getINaturalistPhotoUrl(summary, entry);
+        setTaxonPhotoUrl(objectUrl);
+      } else {
+        setTaxonPhotoUrl(null);
+      }
+
+      setTaxonLoading(false);
+    }
+
+    void loadTaxon();
+
+    return () => {
+      disposed = true;
+      if (objectUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [species]);
+
   return (
     <div className="p-4 space-y-5">
       <button onClick={onBack} className="text-forest-400 hover:text-forest-200 text-sm flex items-center gap-1">
@@ -134,6 +172,58 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
         <InfoCard label="Order" value={species.order} />
         <InfoCard label="Family" value={species.family} />
       </div>
+
+      <section className="rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">iNaturalist</p>
+          <p className="text-sm text-bark-200 mt-1">
+            {taxonLoading
+              ? 'Loading public species reference...'
+              : taxon
+                ? 'Reference data is cached locally. Photos appear when the source image is available.'
+                : 'No iNaturalist reference found yet for this species.'}
+          </p>
+        </div>
+
+        {taxonPhotoUrl && (
+          <img
+            src={taxonPhotoUrl}
+            alt={taxon?.preferredCommonName ?? species.commonName}
+            className="h-48 w-full rounded-xl object-cover"
+          />
+        )}
+
+        {taxon && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <InfoCard label="Public Observations" value={taxon.observationsCount.toLocaleString()} />
+              <InfoCard label="Matched Taxon" value={taxon.preferredCommonName ?? taxon.scientificName} />
+            </div>
+            <div className="flex flex-wrap gap-3 text-sm text-bark-300">
+              <a
+                href={taxon.taxonUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 hover:text-bark-100"
+              >
+                Open on iNaturalist
+                <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+              </a>
+              {taxon.wikipediaUrl && (
+                <a
+                  href={taxon.wikipediaUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 hover:text-bark-100"
+                >
+                  Wikipedia
+                  <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </>
+        )}
+      </section>
 
       {species.description && (
         <div className="bg-forest-900 rounded-xl p-4 border border-forest-800">

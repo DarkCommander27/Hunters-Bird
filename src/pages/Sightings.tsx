@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TrashIcon, PencilIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
+import { getCachedINaturalistTaxonEntry, getINaturalistPhotoUrl } from '../lib/inaturalist';
 import { formatDate, formatTime } from '../lib/utils';
 import type { Sighting, PhotoAsset } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -199,6 +200,38 @@ function SightingDetail({
   );
   const thumbUrl = photo ? URL.createObjectURL(photo.blob) : null;
   const selectedSpecies = allSpecies?.find((species) => species.id === draftSpeciesId);
+  const [taxonPhotoUrl, setTaxonPhotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let disposed = false;
+    let objectUrl: string | null = null;
+
+    async function loadTaxonPhoto() {
+      if (!sighting.identificationTaxon?.taxonId) {
+        setTaxonPhotoUrl(null);
+        return;
+      }
+
+      const entry = await getCachedINaturalistTaxonEntry(sighting.identificationTaxon.taxonId);
+      if (disposed) return;
+
+      objectUrl = getINaturalistPhotoUrl(sighting.identificationTaxon, entry);
+      setTaxonPhotoUrl(objectUrl);
+    }
+
+    void loadTaxonPhoto();
+
+    return () => {
+      disposed = true;
+      if (objectUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [
+    sighting.identificationTaxon?.taxonId,
+    sighting.identificationTaxon?.photoMediumUrl,
+    sighting.identificationTaxon?.photoSquareUrl,
+  ]);
 
   function toggleHabitat(habitat: string) {
     setDraftHabitats((current) => (
@@ -344,6 +377,46 @@ function SightingDetail({
                 <li key={reason}>• {reason}</li>
               ))}
             </ul>
+          )}
+
+          {sighting.identificationTaxon && (
+            <div className="rounded-xl border border-bark-800 bg-bark-900/40 p-3 space-y-1">
+              {taxonPhotoUrl && (
+                <img
+                  src={taxonPhotoUrl}
+                  alt={sighting.identificationTaxon.preferredCommonName ?? sighting.identificationTaxon.scientificName}
+                  className="mb-3 h-32 w-full rounded-lg object-cover"
+                />
+              )}
+              <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">iNaturalist Taxon</p>
+              <p className="text-sm text-bark-100">
+                {sighting.identificationTaxon.preferredCommonName ?? sighting.identificationTaxon.scientificName}
+              </p>
+              <p className="text-xs italic text-bark-300">{sighting.identificationTaxon.scientificName}</p>
+              <p className="text-xs text-bark-300">
+                {sighting.identificationTaxon.observationsCount.toLocaleString()} public observations
+              </p>
+              <div className="flex flex-wrap gap-3 text-xs text-bark-300">
+                <a
+                  href={sighting.identificationTaxon.taxonUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-bark-100"
+                >
+                  Open on iNaturalist
+                </a>
+                {sighting.identificationTaxon.wikipediaUrl && (
+                  <a
+                    href={sighting.identificationTaxon.wikipediaUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-bark-100"
+                  >
+                    Wikipedia
+                  </a>
+                )}
+              </div>
+            </div>
           )}
 
           {sighting.identificationAlternatives && sighting.identificationAlternatives.length > 0 && (

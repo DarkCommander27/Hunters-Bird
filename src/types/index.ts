@@ -35,6 +35,26 @@ export interface PhotoAsset {
   createdAt: number;
 }
 
+export interface INaturalistTaxonSummary {
+  taxonId: number;
+  taxonUrl: string;
+  scientificName: string;
+  preferredCommonName?: string;
+  observationsCount: number;
+  wikipediaUrl?: string;
+  photoMediumUrl?: string;
+  photoSquareUrl?: string;
+  photoAttribution?: string;
+  matchedTerm?: string;
+}
+
+export interface INaturalistTaxonCacheEntry extends INaturalistTaxonSummary {
+  cacheKey: string;
+  cachedAt: number;
+  photoBlob?: Blob;
+  photoMimeType?: string;
+}
+
 export interface Sighting {
   id: string;
   speciesId?: string;             // undefined = unknown/unidentified
@@ -51,6 +71,7 @@ export interface Sighting {
   identificationConfidence?: number; // 0–1
   identificationSource?: 'ai' | 'manual' | 'unknown';
   identificationRationale?: string[];
+  identificationTaxon?: INaturalistTaxonSummary;
   identificationAlternatives?: Array<{
     speciesId: string;
     speciesName: string;

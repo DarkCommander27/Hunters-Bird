@@ -1,4 +1,5 @@
-import type { BirdSpecies } from '../types';
+import type { BirdSpecies, INaturalistTaxonSummary } from '../types';
+import { fetchINaturalistTaxon } from './inaturalist';
 
 export interface IdentificationRequest {
   photoName?: string;
@@ -13,10 +14,12 @@ export interface IdentificationSuggestion {
   confidence: number;
   rationale: string[];
   autoNotes: string;
+  inaturalistTaxon?: INaturalistTaxonSummary;
   alternatives: Array<{
     species: BirdSpecies;
     confidence: number;
     rationale: string[];
+    inaturalistTaxon?: INaturalistTaxonSummary;
   }>;
 }
 
@@ -147,19 +150,27 @@ export const demoBirdIdentifier: BirdIdentifier = {
       .map((species) => ({ species, ...scoreSpecies(species, request) }))
       .sort((left, right) => right.score - left.score);
 
-    const best = ranked[0];
+    const enrichedRanked = await Promise.all(
+      ranked.slice(0, 4).map(async (candidate) => ({
+        ...candidate,
+        inaturalistTaxon: await fetchINaturalistTaxon(candidate.species) ?? undefined,
+      })),
+    );
+
+    const best = enrichedRanked[0];
     if (!best || best.score < 0.5) return null;
 
     const rationale = best.rationale.length > 0
       ? best.rationale.slice(0, 3)
       : ['matched against the active regional bird pack'];
-    const alternatives = ranked
+    const alternatives = enrichedRanked
       .slice(1, 4)
       .filter((candidate) => candidate.score >= 0.35)
       .map((candidate) => ({
         species: candidate.species,
         confidence: candidate.score,
         rationale: candidate.rationale.slice(0, 2),
+        inaturalistTaxon: candidate.inaturalistTaxon,
       }));
 
     return {
@@ -167,6 +178,7 @@ export const demoBirdIdentifier: BirdIdentifier = {
       confidence: best.score,
       rationale,
       autoNotes: `${best.species.commonName} (${best.species.scientificName})\n${best.species.description ?? 'Regional species match.'}`,
+      inaturalistTaxon: best.inaturalistTaxon,
       alternatives,
     };
   },
