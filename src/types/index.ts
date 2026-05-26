@@ -1,0 +1,74 @@
+// ─── Core Data Types ──────────────────────────────────────────────────────────
+
+export interface RegionPack {
+  id: string;
+  name: string;
+  description: string;
+  states: string[];
+  speciesCount: number;
+  version: string;
+  downloadedAt?: number; // timestamp; undefined = not downloaded
+  isDefault?: boolean;
+}
+
+export interface BirdSpecies {
+  id: string;
+  commonName: string;
+  scientificName: string;
+  order: string;
+  family: string;
+  habitats: string[];
+  regions: string[]; // region pack ids
+  states: string[];
+  seasonality: ('spring' | 'summer' | 'fall' | 'winter' | 'year-round')[];
+  aliases: string[];
+  description?: string;
+  thumbnailUrl?: string;
+}
+
+export interface PhotoAsset {
+  id: string;
+  blob: Blob;
+  mimeType: string;
+  width?: number;
+  height?: number;
+  createdAt: number;
+}
+
+export interface Sighting {
+  id: string;
+  speciesId?: string;             // undefined = unknown/unidentified
+  speciesNameSnapshot?: string;   // snapshot of name at save time
+  photoId?: string;
+  createdAt: number;
+  latitude?: number;
+  longitude?: number;
+  regionPackId?: string;
+  habitatsSnapshot: string[];
+  notes: string;
+  weather?: string;
+  birdCount: number;
+  identificationConfidence?: number; // 0–1
+  identificationSource?: 'ai' | 'manual' | 'unknown';
+  confirmedByUser: boolean;
+  status: 'confirmed' | 'unknown' | 'pending';
+}
+
+export interface AppSettings {
+  id: 'singleton';
+  gpsEnabled: boolean;
+  darkMode: boolean;
+  activeRegionPackId?: string;
+  downloadedPackIds: string[];
+}
+
+// ─── UI helpers ───────────────────────────────────────────────────────────────
+
+export type NavSection =
+  | 'home'
+  | 'regions'
+  | 'bird-guide'
+  | 'add-sighting'
+  | 'sightings'
+  | 'life-list'
+  | 'settings';
