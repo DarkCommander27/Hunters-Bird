@@ -7,10 +7,12 @@ import {
   MapPinIcon,
   XMarkIcon,
   CheckIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
 import { useSettings } from '../hooks/useSettings';
 import { newId, compressImage } from '../lib/utils';
+import { demoBirdIdentifier, type IdentificationSuggestion } from '../lib/identification';
 import type { BirdSpecies, Sighting, PhotoAsset } from '../types';
 
 const HABITATS = ['Forest', 'Wetland', 'Grassland', 'Mountain', 'Urban/Suburban', 'River/Stream', 'Lake/Pond'];
@@ -35,6 +37,9 @@ export function AddSighting() {
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [showSpeciesPicker, setShowSpeciesPicker] = useState(false);
+  const [identifyLoading, setIdentifyLoading] = useState(false);
+  const [identifyError, setIdentifyError] = useState<string | null>(null);
+  const [aiSuggestion, setAiSuggestion] = useState<IdentificationSuggestion | null>(null);
 
   const allSpecies = useLiveQuery(
     () => settings.activeRegionPackId
@@ -65,6 +70,16 @@ export function AddSighting() {
     );
   }
 
+  const selectedAiCandidate = selectedSpecies && aiSuggestion
+    ? aiSuggestion.species.id === selectedSpecies.id
+      ? {
+          species: aiSuggestion.species,
+          confidence: aiSuggestion.confidence,
+          rationale: aiSuggestion.rationale,
+        }
+      : aiSuggestion.alternatives.find((candidate) => candidate.species.id === selectedSpecies.id)
+    : undefined;
+
   async function captureGps() {
     if (!settings.gpsEnabled) return;
     setGpsLoading(true);
@@ -82,7 +97,7 @@ export function AddSighting() {
     );
   }
 
-  async function saveSighting(saveAs: 'confirmed' | 'unknown') {
+  async function saveSighting(saveAs: 'confirmed' | 'pending' | 'unknown') {
     setSaving(true);
     try {
       let photoId: string | undefined;
@@ -97,10 +112,12 @@ export function AddSighting() {
         photoId = asset.id;
       }
 
+      const isKnownSighting = saveAs === 'confirmed' || saveAs === 'pending';
+      const usedAiSuggestion = Boolean(selectedAiCandidate);
       const sighting: Sighting = {
         id: newId(),
-        speciesId: saveAs === 'confirmed' ? (selectedSpecies?.id ?? undefined) : undefined,
-        speciesNameSnapshot: saveAs === 'confirmed' ? (selectedSpecies?.commonName ?? undefined) : undefined,
+        speciesId: isKnownSighting ? (selectedSpecies?.id ?? undefined) : undefined,
+        speciesNameSnapshot: isKnownSighting ? (selectedSpecies?.commonName ?? undefined) : undefined,
         photoId,
         createdAt: Date.now(),
         latitude: gpsCoords?.lat,
@@ -110,15 +127,70 @@ export function AddSighting() {
         notes,
         weather: weather || undefined,
         birdCount,
-        identificationSource: saveAs === 'unknown' ? 'unknown' : 'manual',
+        identificationConfidence: isKnownSighting && usedAiSuggestion ? selectedAiCandidate?.confidence : undefined,
+        identificationSource: saveAs === 'unknown' ? 'unknown' : (usedAiSuggestion ? 'ai' : 'manual'),
+        identificationRationale: isKnownSighting && usedAiSuggestion ? selectedAiCandidate?.rationale : undefined,
+        identificationAlternatives: isKnownSighting && aiSuggestion
+          ? [
+              {
+                speciesId: aiSuggestion.species.id,
+                speciesName: aiSuggestion.species.commonName,
+                confidence: aiSuggestion.confidence,
+                rationale: aiSuggestion.rationale,
+              },
+              ...aiSuggestion.alternatives.map((candidate) => ({
+                speciesId: candidate.species.id,
+                speciesName: candidate.species.commonName,
+                confidence: candidate.confidence,
+                rationale: candidate.rationale,
+              })),
+            ].filter((candidate, index, allCandidates) => {
+              return allCandidates.findIndex((entry) => entry.speciesId === candidate.speciesId) === index;
+            })
+          : undefined,
         confirmedByUser: saveAs === 'confirmed',
-        status: saveAs === 'unknown' ? 'unknown' : 'confirmed',
+        status: saveAs,
       };
 
       await db.sightings.put(sighting);
       navigate('/sightings');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function identifySpecies() {
+    if (!photoBlob && !notes.trim() && selectedHabitats.length === 0) {
+      setIdentifyError('Add a photo, notes, or habitat details first.');
+      return;
+    }
+
+    setIdentifyLoading(true);
+    setIdentifyError(null);
+    try {
+      const suggestion = await demoBirdIdentifier.identify({
+        photoName: photoBlob instanceof File ? photoBlob.name : undefined,
+        notes,
+        habitats: selectedHabitats,
+        regionPackId: settings.activeRegionPackId,
+        species: allSpecies ?? [],
+      });
+
+      if (!suggestion) {
+        setAiSuggestion(null);
+        setIdentifyError('No strong match yet. Add more notes, habitat clues, or a clearer photo.');
+        return;
+      }
+
+      setSelectedSpecies(suggestion.species);
+      setAiSuggestion(suggestion);
+      setNotes((current) => {
+        if (!current.trim()) return suggestion.autoNotes;
+        if (current.includes(suggestion.species.commonName)) return current;
+        return `${current.trim()}\n\nSuggested ID:\n${suggestion.autoNotes}`;
+      });
+    } finally {
+      setIdentifyLoading(false);
     }
   }
 
@@ -165,6 +237,14 @@ export function AddSighting() {
       <section className="space-y-2">
         <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Species</label>
         <button
+          onClick={identifySpecies}
+          disabled={identifyLoading || (!photoBlob && !notes.trim() && selectedHabitats.length === 0)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-bark-900 border border-bark-700 rounded-xl text-sm font-medium text-bark-200 hover:bg-bark-800 transition-colors disabled:opacity-50"
+        >
+          <SparklesIcon className="h-5 w-5" />
+          {identifyLoading ? 'Analyzing bird clues…' : `Identify with ${demoBirdIdentifier.label}`}
+        </button>
+        <button
           onClick={() => setShowSpeciesPicker(true)}
           className="w-full text-left px-4 py-3 bg-forest-900 border border-forest-700 rounded-xl text-sm transition-colors hover:border-forest-500"
         >
@@ -174,6 +254,52 @@ export function AddSighting() {
             <span className="text-forest-500">Search and select a species…</span>
           )}
         </button>
+
+        {aiSuggestion && (
+          <div className="rounded-xl border border-bark-700 bg-bark-950/60 p-4 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">AI Suggestion</p>
+                <p className="text-base font-semibold text-bark-100">{aiSuggestion.species.commonName}</p>
+                <p className="text-xs italic text-bark-300">{aiSuggestion.species.scientificName}</p>
+              </div>
+              <span className="rounded-full bg-bark-800 px-2.5 py-1 text-xs font-semibold text-bark-200">
+                {Math.round(aiSuggestion.confidence * 100)}% match
+              </span>
+            </div>
+            <p className="text-sm text-bark-200">{aiSuggestion.species.description}</p>
+            <ul className="space-y-1 text-xs text-bark-300">
+              {aiSuggestion.rationale.map((reason) => (
+                <li key={reason}>• {reason}</li>
+              ))}
+            </ul>
+            {aiSuggestion.alternatives.length > 0 && (
+              <div className="pt-2 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Other likely matches</p>
+                <div className="flex flex-wrap gap-2">
+                  {aiSuggestion.alternatives.map((candidate) => (
+                    <button
+                      key={candidate.species.id}
+                      onClick={() => {
+                        setSelectedSpecies(candidate.species);
+                        setIdentifyError(null);
+                      }}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        selectedSpecies?.id === candidate.species.id
+                          ? 'border-bark-500 bg-bark-800 text-bark-100'
+                          : 'border-bark-800 bg-bark-900/60 text-bark-300 hover:text-bark-100'
+                      }`}
+                    >
+                      {candidate.species.commonName} · {Math.round(candidate.confidence * 100)}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {identifyError && <p className="text-xs text-bark-300">{identifyError}</p>}
 
         {showSpeciesPicker && (
           <div className="bg-forest-900 border border-forest-700 rounded-xl overflow-hidden">
@@ -303,7 +429,7 @@ export function AddSighting() {
       </section>
 
       {/* Actions */}
-      <div className="grid grid-cols-2 gap-3 pt-2">
+      <div className={`grid gap-3 pt-2 ${selectedSpecies ? 'grid-cols-3' : 'grid-cols-2'}`}>
         <button
           onClick={() => saveSighting('unknown')}
           disabled={saving}
@@ -311,9 +437,18 @@ export function AddSighting() {
         >
           Save Unknown
         </button>
+        {selectedSpecies && (
+          <button
+            onClick={() => saveSighting('pending')}
+            disabled={saving}
+            className="flex items-center justify-center gap-2 py-3 bg-forest-900 border border-forest-700 hover:bg-forest-800 text-forest-200 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
+          >
+            Save for Review
+          </button>
+        )}
         <button
           onClick={() => saveSighting('confirmed')}
-          disabled={saving}
+          disabled={saving || !selectedSpecies}
           className="flex items-center justify-center gap-2 py-3 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
         >
           <CheckIcon className="h-4 w-4" />

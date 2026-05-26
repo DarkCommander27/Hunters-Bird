@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TrashIcon, PencilIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
@@ -6,7 +6,10 @@ import { formatDate, formatTime } from '../lib/utils';
 import type { Sighting, PhotoAsset } from '../types';
 import { useNavigate } from 'react-router-dom';
 
-type FilterStatus = 'all' | 'confirmed' | 'unknown';
+type FilterStatus = 'all' | 'confirmed' | 'unknown' | 'pending';
+
+const HABITATS = ['Forest', 'Wetland', 'Grassland', 'Mountain', 'Urban/Suburban', 'River/Stream', 'Lake/Pond'];
+const WEATHER_OPTIONS = ['Clear', 'Partly Cloudy', 'Overcast', 'Light Rain', 'Windy', 'Foggy'];
 
 export function Sightings() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
@@ -24,6 +27,12 @@ export function Sightings() {
     return sightings.filter(s => s.status === statusFilter);
   }, [sightings, statusFilter]);
 
+  const pendingSightings = useMemo(
+    () => sightings?.filter((sighting) => sighting.status === 'pending') ?? [],
+    [sightings],
+  );
+  const nextPending = pendingSightings[0];
+
   async function deleteSighting(id: string) {
     if (!confirm('Delete this sighting?')) return;
     const s = await db.sightings.get(id);
@@ -35,10 +44,12 @@ export function Sightings() {
   if (selected) {
     return (
       <SightingDetail
+        key={`${selected.id}:${selected.status}:${selected.speciesId ?? ''}:${selected.notes}:${selected.weather ?? ''}:${selected.birdCount}:${selected.habitatsSnapshot.join('|')}`}
         sighting={selected}
         onBack={() => setSelected(null)}
         onDelete={() => deleteSighting(selected.id)}
         onReidentify={() => navigate('/add-sighting')}
+        onUpdate={(updated) => setSelected(updated)}
       />
     );
   }
@@ -47,9 +58,52 @@ export function Sightings() {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold text-forest-100">My Sightings</h1>
 
+      {pendingSightings.length > 0 && (
+        <section className="rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Review Queue</p>
+              <h2 className="text-lg font-semibold text-bark-100">{pendingSightings.length} sighting{pendingSightings.length === 1 ? '' : 's'} waiting for review</h2>
+              <p className="text-sm text-bark-300 mt-1">
+                Pending sightings stay visible until you confirm the ID or send them back to unknown.
+              </p>
+            </div>
+            <StatusBadge status="pending" />
+          </div>
+
+          {nextPending && (
+            <button
+              onClick={() => setSelected(nextPending)}
+              className="w-full text-left rounded-xl border border-bark-800 bg-bark-900/40 p-3 transition-colors hover:bg-bark-900/70"
+            >
+              <p className="font-medium text-bark-100">Next up: {nextPending.speciesNameSnapshot ?? 'Unknown bird'}</p>
+              <p className="text-xs text-bark-300 mt-1">{formatDate(nextPending.createdAt)} · {formatTime(nextPending.createdAt)}</p>
+              {nextPending.notes && <p className="text-xs text-bark-400 truncate mt-1">{nextPending.notes}</p>}
+            </button>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setStatusFilter('pending')}
+              className="px-3 py-2 rounded-xl bg-bark-800 text-bark-100 text-sm font-medium transition-colors hover:bg-bark-700"
+            >
+              Show pending only
+            </button>
+            {nextPending && (
+              <button
+                onClick={() => setSelected(nextPending)}
+                className="px-3 py-2 rounded-xl border border-bark-700 text-bark-200 text-sm font-medium transition-colors hover:text-bark-100"
+              >
+                Review next
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Filter */}
       <div className="flex gap-2">
-        {(['all', 'confirmed', 'unknown'] as FilterStatus[]).map(f => (
+        {(['all', 'confirmed', 'pending', 'unknown'] as FilterStatus[]).map(f => (
           <button
             key={f}
             onClick={() => setStatusFilter(f)}
@@ -117,18 +171,103 @@ function SightingCard({ sighting, onClick }: { sighting: Sighting; onClick: () =
 }
 
 function SightingDetail({
-  sighting, onBack, onDelete, onReidentify,
+  sighting, onBack, onDelete, onReidentify, onUpdate,
 }: {
   sighting: Sighting;
   onBack: () => void;
   onDelete: () => void;
   onReidentify: () => void;
+  onUpdate: (updated: Sighting) => void;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [draftStatus, setDraftStatus] = useState<Sighting['status']>(sighting.status);
+  const [draftSpeciesId, setDraftSpeciesId] = useState(sighting.speciesId ?? '');
+  const [draftBirdCount, setDraftBirdCount] = useState(sighting.birdCount);
+  const [draftWeather, setDraftWeather] = useState(sighting.weather ?? '');
+  const [draftNotes, setDraftNotes] = useState(sighting.notes);
+  const [draftHabitats, setDraftHabitats] = useState<string[]>(sighting.habitatsSnapshot);
+  const [saving, setSaving] = useState(false);
   const photo = useLiveQuery<PhotoAsset | undefined>(
     () => sighting.photoId ? db.photos.get(sighting.photoId) : Promise.resolve(undefined),
     [sighting.photoId],
   );
+  const allSpecies = useLiveQuery(
+    () => sighting.regionPackId
+      ? db.birdSpecies.where('regions').equals(sighting.regionPackId).sortBy('commonName')
+      : db.birdSpecies.orderBy('commonName').toArray(),
+    [sighting.regionPackId],
+  );
   const thumbUrl = photo ? URL.createObjectURL(photo.blob) : null;
+  const selectedSpecies = allSpecies?.find((species) => species.id === draftSpeciesId);
+
+  function toggleHabitat(habitat: string) {
+    setDraftHabitats((current) => (
+      current.includes(habitat)
+        ? current.filter((entry) => entry !== habitat)
+        : [...current, habitat]
+    ));
+  }
+
+  function resetDraft() {
+    setDraftStatus(sighting.status);
+    setDraftSpeciesId(sighting.speciesId ?? '');
+    setDraftBirdCount(sighting.birdCount);
+    setDraftWeather(sighting.weather ?? '');
+    setDraftNotes(sighting.notes);
+    setDraftHabitats(sighting.habitatsSnapshot);
+  }
+
+  async function applyReviewStatus(status: Sighting['status']) {
+    const updated: Sighting = {
+      ...sighting,
+      status,
+      confirmedByUser: status === 'confirmed',
+      speciesId: status === 'unknown' ? undefined : sighting.speciesId,
+      speciesNameSnapshot: status === 'unknown' ? undefined : sighting.speciesNameSnapshot,
+      identificationSource: status === 'unknown'
+        ? 'unknown'
+        : sighting.identificationSource ?? 'manual',
+      identificationConfidence: status === 'unknown' ? undefined : sighting.identificationConfidence,
+    };
+
+    await db.sightings.put(updated);
+    onUpdate(updated);
+  }
+
+  async function saveEdits() {
+    if ((draftStatus === 'confirmed' || draftStatus === 'pending') && !draftSpeciesId) return;
+
+    setSaving(true);
+    try {
+      const isKnownStatus = draftStatus === 'confirmed' || draftStatus === 'pending';
+      const preservedAiMatch = sighting.identificationSource === 'ai' && draftSpeciesId === sighting.speciesId;
+      const updated: Sighting = {
+        ...sighting,
+        speciesId: isKnownStatus ? (draftSpeciesId || undefined) : undefined,
+        speciesNameSnapshot: isKnownStatus ? (selectedSpecies?.commonName ?? sighting.speciesNameSnapshot) : undefined,
+        habitatsSnapshot: draftHabitats,
+        notes: draftNotes.trim(),
+        weather: draftWeather || undefined,
+        birdCount: draftBirdCount,
+        identificationConfidence: preservedAiMatch && isKnownStatus ? sighting.identificationConfidence : undefined,
+        identificationSource: !isKnownStatus
+          ? 'unknown'
+          : preservedAiMatch
+            ? 'ai'
+            : 'manual',
+        confirmedByUser: draftStatus === 'confirmed',
+        status: draftStatus,
+      };
+
+      await db.sightings.put(updated);
+      onUpdate(updated);
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const saveDisabled = saving || ((draftStatus === 'confirmed' || draftStatus === 'pending') && !draftSpeciesId);
 
   return (
     <div className="p-4 space-y-5 pb-8">
@@ -190,8 +329,195 @@ function SightingDetail({
         </div>
       )}
 
+      {(sighting.identificationRationale?.length || sighting.identificationAlternatives?.length) && (
+        <section className="rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Review Evidence</p>
+            <p className="text-sm text-bark-200 mt-1">
+              Saved AI reasoning helps you revisit why this match was suggested while you are still offline.
+            </p>
+          </div>
+
+          {sighting.identificationRationale && sighting.identificationRationale.length > 0 && (
+            <ul className="space-y-1 text-xs text-bark-300">
+              {sighting.identificationRationale.map((reason) => (
+                <li key={reason}>• {reason}</li>
+              ))}
+            </ul>
+          )}
+
+          {sighting.identificationAlternatives && sighting.identificationAlternatives.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Alternative matches</p>
+              <div className="flex flex-wrap gap-2">
+                {sighting.identificationAlternatives.map((candidate) => (
+                  <span
+                    key={candidate.speciesId}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                      candidate.speciesId === sighting.speciesId
+                        ? 'border-bark-500 bg-bark-800 text-bark-100'
+                        : 'border-bark-800 bg-bark-900/60 text-bark-300'
+                    }`}
+                  >
+                    {candidate.speciesName} · {Math.round(candidate.confidence * 100)}%
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {!editing && sighting.status === 'pending' && (
+        <section className="rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">Review Decision</p>
+            <p className="text-sm text-bark-200 mt-1">
+              Confirm this identification if it looks right, or send it back to unknown until you have better evidence.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => void applyReviewStatus('confirmed')}
+              className="px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-600 text-forest-100 text-sm font-medium transition-colors"
+            >
+              Confirm ID
+            </button>
+            <button
+              onClick={() => void applyReviewStatus('unknown')}
+              className="px-4 py-2.5 rounded-xl bg-bark-800 hover:bg-bark-700 text-bark-100 text-sm font-medium transition-colors"
+            >
+              Mark Unknown
+            </button>
+          </div>
+        </section>
+      )}
+
+      {editing && (
+        <div className="space-y-5 rounded-2xl border border-forest-800 bg-forest-950/70 p-4">
+          <section className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-forest-500">Identification Status</p>
+            <div className="flex flex-wrap gap-2">
+              {(['confirmed', 'pending', 'unknown'] as Sighting['status'][]).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setDraftStatus(status)}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium capitalize transition-colors ${
+                    draftStatus === status
+                      ? 'bg-forest-600 text-forest-100'
+                      : 'bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-300'
+                  }`}
+                >
+                  {status}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Species</label>
+            <select
+              value={draftSpeciesId}
+              onChange={(e) => setDraftSpeciesId(e.target.value)}
+              disabled={draftStatus === 'unknown'}
+              className="w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 focus:outline-none focus:border-forest-500 disabled:opacity-50"
+            >
+              <option value="">{draftStatus === 'unknown' ? 'Unknown bird' : 'Select species…'}</option>
+              {(allSpecies ?? []).map((species) => (
+                <option key={species.id} value={species.id}>{species.commonName}</option>
+              ))}
+            </select>
+            {draftStatus !== 'unknown' && !draftSpeciesId && (
+              <p className="text-xs text-bark-300">Choose a species before saving a known or pending sighting.</p>
+            )}
+          </section>
+
+          <section className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Bird Count</label>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setDraftBirdCount((count) => Math.max(1, count - 1))}
+                className="h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
+              >
+                −
+              </button>
+              <span className="text-2xl font-bold text-forest-100 w-10 text-center">{draftBirdCount}</span>
+              <button
+                onClick={() => setDraftBirdCount((count) => count + 1)}
+                className="h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
+              >
+                +
+              </button>
+            </div>
+          </section>
+
+          <section className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Weather</label>
+            <select
+              value={draftWeather}
+              onChange={(e) => setDraftWeather(e.target.value)}
+              className="w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 focus:outline-none focus:border-forest-500"
+            >
+              <option value="">Select weather…</option>
+              {WEATHER_OPTIONS.map((weather) => (
+                <option key={weather} value={weather}>{weather}</option>
+              ))}
+            </select>
+          </section>
+
+          <section className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Habitats</label>
+            <div className="flex flex-wrap gap-2">
+              {HABITATS.map((habitat) => (
+                <button
+                  key={habitat}
+                  onClick={() => toggleHabitat(habitat)}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                    draftHabitats.includes(habitat)
+                      ? 'bg-forest-600 text-forest-100'
+                      : 'bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-300'
+                  }`}
+                >
+                  {habitat}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Notes</label>
+            <textarea
+              value={draftNotes}
+              onChange={(e) => setDraftNotes(e.target.value)}
+              rows={4}
+              placeholder="Behavior, plumage details, song, location notes…"
+              className="w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500 resize-none"
+            />
+          </section>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                resetDraft();
+                setEditing(false);
+              }}
+              className="px-4 py-2.5 bg-forest-900 border border-forest-700 text-forest-300 rounded-xl text-sm font-medium transition-colors hover:text-forest-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveEdits}
+              disabled={saveDisabled}
+              className="px-4 py-2.5 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3">
-        {sighting.status === 'unknown' && (
+        {!editing && sighting.status === 'unknown' && (
           <button
             onClick={onReidentify}
             className="flex items-center gap-2 px-4 py-2.5 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl text-sm font-medium transition-colors"
@@ -207,13 +533,15 @@ function SightingDetail({
           <TrashIcon className="h-4 w-4" />
           Delete
         </button>
-        <button
-          onClick={onBack}
-          className="ml-auto flex items-center gap-2 px-4 py-2.5 bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-200 rounded-xl text-sm font-medium transition-colors"
-        >
-          <PencilIcon className="h-4 w-4" />
-          Edit (soon)
-        </button>
+        {!editing && (
+          <button
+            onClick={() => setEditing(true)}
+            className="ml-auto flex items-center gap-2 px-4 py-2.5 bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-200 rounded-xl text-sm font-medium transition-colors"
+          >
+            <PencilIcon className="h-4 w-4" />
+            Edit Sighting
+          </button>
+        )}
       </div>
     </div>
   );

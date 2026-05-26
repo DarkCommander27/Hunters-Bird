@@ -13,7 +13,7 @@ A rugged, offline-capable birding PWA for hikers and naturalists. Works in the f
 - **Life List** — automatic unique-species summary across all confirmed sightings
 - **Dark mode** — nature-inspired dark theme, togglable from Settings
 - **GPS support** — optional toggle, attaches coordinates to each sighting
-- **Export** — download all sightings as JSON
+- **Backup and restore** — export or restore sightings, photos, and settings locally as JSON
 
 ## Stack
 
@@ -44,7 +44,31 @@ npm run preview
 
 # Lint
 npm run lint
+
+# Run tests
+npm run test:run
 ```
+
+## AI Bird ID Demo
+
+The Add Sighting flow now includes a local demo identifier called `Trail Smart ID`.
+It uses the active region pack, habitat choices, and field notes to suggest a likely species,
+then auto-fills the species field and helper notes for review before save.
+
+This is a local demo bot, not a production vision model. For real photo-based identification,
+you would connect the same UI flow to a backend or serverless provider.
+
+## GitHub Pages Demo
+
+This app is now configured to deploy as a static demo to GitHub Pages.
+
+- Routing uses hash URLs so deep links work on Pages.
+- The Vite build uses the repository base path during GitHub Actions deploys.
+- Pushes to `main` can publish the `dist` output through GitHub Pages.
+
+After enabling Pages in the repository settings, the expected demo URL is:
+
+`https://darkcommander27.github.io/Hunters-Bird/`
 
 ## Project Structure
 
@@ -82,11 +106,9 @@ src/
 ## Roadmap / Follow-up
 
 - [ ] Online AI bird identification integration (pluggable provider interface ready)
-- [ ] Edit sighting flow
 - [ ] Map view of sightings
 - [ ] Richer species data per region pack (photos, audio, similar species)
 - [ ] State-level filtering inside packs
 - [ ] Export as CSV / share life list
-- [ ] Import backup from JSON
 - [ ] iOS PWA install guidance
 - [ ] Storage usage estimation (navigator.storage API)

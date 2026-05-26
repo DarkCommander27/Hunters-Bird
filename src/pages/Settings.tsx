@@ -1,9 +1,15 @@
+import { useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { useSettings, updateSettings } from '../hooks/useSettings';
+import { createBackupPayload, deserializePhotoAsset, parseBackupPayload } from '../lib/backup';
 
 export function Settings() {
   const settings = useSettings();
+  const restoreInputRef = useRef<HTMLInputElement>(null);
+  const [backupMessage, setBackupMessage] = useState<string | null>(null);
+  const [backupError, setBackupError] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
 
   const [sightingCount, photoCount] = [
     useLiveQuery(() => db.sightings.count(), []),
@@ -19,16 +25,63 @@ export function Settings() {
     await updateSettings({ downloadedPackIds: ['appalachia'] });
   }
 
-  async function exportSightings() {
-    const sightings = await db.sightings.toArray();
-    const json = JSON.stringify(sightings, null, 2);
+  async function exportBackup() {
+    setBackupError(null);
+    setBackupMessage(null);
+
+    const [sightings, photos, savedSettings] = await Promise.all([
+      db.sightings.toArray(),
+      db.photos.toArray(),
+      db.settings.get('singleton'),
+    ]);
+
+    const payload = await createBackupPayload({
+      sightings,
+      photos,
+      settings: savedSettings,
+    });
+
+    const json = JSON.stringify(payload, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hunters-bird-sightings-${Date.now()}.json`;
+    a.download = `hunters-bird-backup-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setBackupMessage(`Backup exported with ${sightings.length} sightings and ${photos.length} photos.`);
+  }
+
+  async function restoreBackup(file: File) {
+    setRestoring(true);
+    setBackupError(null);
+    setBackupMessage(null);
+
+    try {
+      const payload = parseBackupPayload(await file.text());
+      if (!confirm('Restore this backup? This replaces local sightings and stored photos on this device.')) return;
+
+      const photos = payload.photos.map(deserializePhotoAsset);
+      await db.transaction('rw', db.sightings, db.photos, db.settings, async () => {
+        await db.sightings.clear();
+        await db.photos.clear();
+        if (payload.sightings.length > 0) await db.sightings.bulkPut(payload.sightings);
+        if (photos.length > 0) await db.photos.bulkPut(photos);
+        if (payload.settings) await db.settings.put(payload.settings);
+      });
+
+      if (payload.settings) {
+        document.documentElement.classList.toggle('dark', payload.settings.darkMode);
+        document.documentElement.classList.toggle('light', !payload.settings.darkMode);
+      }
+
+      setBackupMessage(`Backup restored: ${payload.sightings.length} sightings and ${photos.length} photos loaded.`);
+    } catch (error) {
+      setBackupError(error instanceof Error ? error.message : 'Could not restore the backup file.');
+    } finally {
+      setRestoring(false);
+      if (restoreInputRef.current) restoreInputRef.current.value = '';
+    }
   }
 
   return (
@@ -73,11 +126,34 @@ export function Settings() {
         <h2 className="text-xs font-semibold uppercase tracking-widest text-forest-500">Data</h2>
 
         <ActionButton
-          label="Export Sightings"
-          description="Download all sightings as a JSON file"
-          onClick={exportSightings}
+          label="Export Backup"
+          description="Download sightings, photos, and settings as a backup JSON file"
+          onClick={exportBackup}
           variant="default"
         />
+
+        <ActionButton
+          label={restoring ? 'Restoring Backup…' : 'Restore Backup'}
+          description="Replace local sightings and photos from a Hunters-Bird backup file"
+          onClick={() => restoreInputRef.current?.click()}
+          variant="default"
+        />
+
+        <input
+          ref={restoreInputRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) {
+              void restoreBackup(file);
+            }
+          }}
+        />
+
+        {backupMessage && <p className="text-xs text-forest-400">{backupMessage}</p>}
+        {backupError && <p className="text-xs text-red-400">{backupError}</p>}
 
         <ActionButton
           label="Clear All Data"

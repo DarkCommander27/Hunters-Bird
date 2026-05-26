@@ -50,6 +50,13 @@ export interface Sighting {
   birdCount: number;
   identificationConfidence?: number; // 0–1
   identificationSource?: 'ai' | 'manual' | 'unknown';
+  identificationRationale?: string[];
+  identificationAlternatives?: Array<{
+    speciesId: string;
+    speciesName: string;
+    confidence: number;
+    rationale: string[];
+  }>;
   confirmedByUser: boolean;
   status: 'confirmed' | 'unknown' | 'pending';
 }
@@ -60,6 +67,31 @@ export interface AppSettings {
   darkMode: boolean;
   activeRegionPackId?: string;
   downloadedPackIds: string[];
+}
+
+export interface AiIdentificationProvider {
+  id: string;
+  label: string;
+  mode: 'demo-local' | 'remote';
+  enabled: boolean;
+  description: string;
+}
+
+export interface SerializedPhotoAsset {
+  id: string;
+  mimeType: string;
+  width?: number;
+  height?: number;
+  createdAt: number;
+  dataUrl: string;
+}
+
+export interface BackupPayload {
+  version: 1;
+  exportedAt: number;
+  sightings: Sighting[];
+  photos: SerializedPhotoAsset[];
+  settings?: AppSettings;
 }
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
