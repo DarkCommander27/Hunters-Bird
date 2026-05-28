@@ -71,8 +71,10 @@ async function saveTaxonCacheEntry(species: BirdSpecies, summary: INaturalistTax
   let photoBlob = existing?.photoBlob;
   let photoMimeType = existing?.photoMimeType;
 
-  if (!photoBlob && summary.photoSquareUrl) {
-    const downloadedPhoto = await fetchTaxonPhotoBlob(summary.photoSquareUrl);
+  const preferredPhotoUrl = summary.photoMediumUrl ?? summary.photoSquareUrl;
+
+  if (!photoBlob && preferredPhotoUrl) {
+    const downloadedPhoto = await fetchTaxonPhotoBlob(preferredPhotoUrl);
     if (downloadedPhoto) {
       photoBlob = downloadedPhoto.blob;
       photoMimeType = downloadedPhoto.mimeType;

@@ -81,3 +81,18 @@ html { scroll-behavior: smooth; }
 .sighting-map .leaflet-control-attribution a {
   color: var(--color-forest-200);
 }
+
+.sighting-map .marker-cluster-small,
+.sighting-map .marker-cluster-medium,
+.sighting-map .marker-cluster-large {
+  background: rgb(74 122 53 / 0.22);
+}
+
+.sighting-map .marker-cluster-small div,
+.sighting-map .marker-cluster-medium div,
+.sighting-map .marker-cluster-large div {
+  background: rgb(45 74 34 / 0.92);
+  color: var(--color-forest-50);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px rgb(184 224 154 / 0.18);
+}

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { LatLngBounds, Icon } from 'leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import markerIcon2xUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIconUrl from 'leaflet/dist/images/marker-icon.png';
 import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
@@ -44,33 +45,35 @@ export default function SightingsMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <FitSightingsBounds sightings={sightings} />
-        {sightings.map((sighting) => (
-          <Marker
-            key={sighting.id}
-            position={[sighting.latitude, sighting.longitude]}
-            icon={sightingMarkerIcon}
-          >
-            <Popup>
-              <div className="space-y-2">
-                <div>
-                  <p className="font-semibold text-forest-100">{sighting.speciesNameSnapshot ?? 'Unknown bird'}</p>
-                  <p className="text-xs text-forest-400">
-                    {formatDate(sighting.createdAt)} · {formatTime(sighting.createdAt)}
-                  </p>
+        <MarkerClusterGroup chunkedLoading showCoverageOnHover={false} maxClusterRadius={40}>
+          {sightings.map((sighting) => (
+            <Marker
+              key={sighting.id}
+              position={[sighting.latitude, sighting.longitude]}
+              icon={sightingMarkerIcon}
+            >
+              <Popup>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-semibold text-forest-100">{sighting.speciesNameSnapshot ?? 'Unknown bird'}</p>
+                    <p className="text-xs text-forest-400">
+                      {formatDate(sighting.createdAt)} · {formatTime(sighting.createdAt)}
+                    </p>
+                  </div>
+                  {sighting.notes && (
+                    <p className="text-xs text-forest-300">{sighting.notes}</p>
+                  )}
+                  <button
+                    onClick={() => onSelect(sighting)}
+                    className="rounded-lg bg-forest-700 px-3 py-1.5 text-xs font-medium text-forest-100 transition-colors hover:bg-forest-600"
+                  >
+                    Open sighting
+                  </button>
                 </div>
-                {sighting.notes && (
-                  <p className="text-xs text-forest-300">{sighting.notes}</p>
-                )}
-                <button
-                  onClick={() => onSelect(sighting)}
-                  className="rounded-lg bg-forest-700 px-3 py-1.5 text-xs font-medium text-forest-100 transition-colors hover:bg-forest-600"
-                >
-                  Open sighting
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   );
