@@ -146,63 +146,61 @@ export function Sightings() {
         <span className="ml-auto text-xs text-forest-500 self-center">{filtered.length} sightings</span>
       </div>
 
-      {filtered.length > 0 && (
-        <section className="space-y-3 rounded-2xl border border-forest-800 bg-forest-900/70 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-forest-500">Map View</p>
-              <h2 className="text-lg font-semibold text-forest-100">
-                {mappableSightings.length > 0
-                  ? `${mappableSightings.length} sighting${mappableSightings.length === 1 ? '' : 's'} shown on the map`
-                  : 'No geotagged sightings yet'}
-              </h2>
-              <p className="text-sm text-forest-400 mt-1">
-                {geotaggedSightings.length > 0
-                  ? 'OpenStreetMap tiles with local sighting markers. Filter pins by review status without changing the list below.'
-                  : 'Capture GPS when logging a bird to plot sightings on the map.'}
-              </p>
-            </div>
+      <section className="space-y-3 rounded-2xl border border-forest-800 bg-forest-900/70 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-forest-500">Map View</p>
+            <h2 className="text-lg font-semibold text-forest-100">
+              {mappableSightings.length > 0
+                ? `${mappableSightings.length} sighting${mappableSightings.length === 1 ? '' : 's'} shown on the map`
+                : 'No geotagged sightings yet'}
+            </h2>
+            <p className="text-sm text-forest-400 mt-1">
+              {geotaggedSightings.length > 0
+                ? 'OpenStreetMap tiles with local sighting markers. Filter pins by review status without changing the list below.'
+                : 'Capture GPS when logging a bird to plot sightings on the map.'}
+            </p>
           </div>
+        </div>
 
-          {geotaggedSightings.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {FILTER_STATUSES.map((filterValue) => (
-                <button
-                  key={filterValue}
-                  onClick={() => setMapStatusFilter(filterValue)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                    mapStatusFilter === filterValue
-                      ? 'border-forest-500 bg-forest-700 text-forest-100'
-                      : 'border-forest-700 bg-forest-950 text-forest-300 hover:text-forest-100'
-                  }`}
-                >
-                  {filterValue} pins ({mapCounts[filterValue]})
-                </button>
-              ))}
-            </div>
-          )}
+        {geotaggedSightings.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {FILTER_STATUSES.map((filterValue) => (
+              <button
+                key={filterValue}
+                onClick={() => setMapStatusFilter(filterValue)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+                  mapStatusFilter === filterValue
+                    ? 'border-forest-500 bg-forest-700 text-forest-100'
+                    : 'border-forest-700 bg-forest-950 text-forest-300 hover:text-forest-100'
+                }`}
+              >
+                {filterValue} pins ({mapCounts[filterValue]})
+              </button>
+            ))}
+          </div>
+        )}
 
-          {mappableSightings.length > 0 ? (
-            <Suspense
-              fallback={(
-                <div className="rounded-xl border border-forest-800 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
-                  Loading map…
-                </div>
-              )}
-            >
-              <SightingsMap sightings={mappableSightings} onSelect={setSelected} />
-            </Suspense>
-          ) : geotaggedSightings.length > 0 ? (
-            <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
-              No geotagged sightings match the current map filter.
-            </div>
-          ) : (
-            <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
-              Sightings with saved GPS coordinates will appear here.
-            </div>
-          )}
-        </section>
-      )}
+        {mappableSightings.length > 0 ? (
+          <Suspense
+            fallback={(
+              <div className="rounded-xl border border-forest-800 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+                Loading map…
+              </div>
+            )}
+          >
+            <SightingsMap sightings={mappableSightings} onSelect={setSelected} />
+          </Suspense>
+        ) : geotaggedSightings.length > 0 ? (
+          <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+            No geotagged sightings match the current map filter.
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+            Sightings with saved GPS coordinates will appear here.
+          </div>
+        )}
+      </section>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-16 text-center">

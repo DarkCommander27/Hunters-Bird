@@ -9,13 +9,15 @@ import { Sightings } from './pages/Sightings';
 import { LifeList } from './pages/LifeList';
 import { Settings } from './pages/Settings';
 import { initializeDatabase } from './db/init';
+import { DEFAULT_SETTINGS } from './lib/regionPacks';
+import { applyThemeToDocument } from './lib/theme';
 
 export default function App() {
   useEffect(() => {
     initializeDatabase().catch(console.error);
 
-    // Sync dark mode class from settings at boot (settings hook will manage later)
-    document.documentElement.classList.add('dark');
+    // Seed the root classes with the default theme until the saved settings load.
+    applyThemeToDocument(DEFAULT_SETTINGS);
 
     // Offline/online indicator
     const badge = document.getElementById('offline-badge');

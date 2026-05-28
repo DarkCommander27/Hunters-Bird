@@ -1,5 +1,6 @@
 import { db } from './database';
 import { DEFAULT_SETTINGS, DEFAULT_REGION_PACK_ID, installRegionPack, syncRegionPackCatalog } from '../lib/regionPacks';
+import { normalizeAppSettings } from '../hooks/useSettings';
 
 /** Run once on first launch to populate initial data. */
 export async function initializeDatabase(): Promise<void> {
@@ -7,6 +8,8 @@ export async function initializeDatabase(): Promise<void> {
   const existing = await db.settings.get('singleton');
   if (!existing) {
     await db.settings.put(DEFAULT_SETTINGS);
+  } else if (existing.theme === undefined) {
+    await db.settings.put(normalizeAppSettings(existing));
   }
 
   await syncRegionPackCatalog();

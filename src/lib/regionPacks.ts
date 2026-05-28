@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   id: 'singleton',
   gpsEnabled: true,
   darkMode: true,
+  theme: 'forest',
   activeRegionPackId: DEFAULT_REGION_PACK_ID,
   downloadedPackIds: [DEFAULT_REGION_PACK_ID],
 };

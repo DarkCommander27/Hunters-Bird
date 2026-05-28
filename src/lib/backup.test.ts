@@ -35,6 +35,7 @@ describe('backup helpers', () => {
       id: 'singleton',
       gpsEnabled: true,
       darkMode: true,
+      theme: 'forest',
       activeRegionPackId: 'appalachia',
       downloadedPackIds: ['appalachia'],
     };

@@ -38,6 +38,38 @@
   color-scheme: dark;
 }
 
+html.theme-forest {
+  --font-sans: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+html.theme-pokedex {
+  --color-forest-950: #14080d;
+  --color-forest-900: #251219;
+  --color-forest-800: #4c1f29;
+  --color-forest-700: #7d2431;
+  --color-forest-600: #b33743;
+  --color-forest-500: #e34d4d;
+  --color-forest-400: #ff7b5c;
+  --color-forest-300: #ffb169;
+  --color-forest-200: #ffe0a3;
+  --color-forest-100: #fff0d2;
+  --color-forest-50: #fff9ef;
+
+  --color-bark-950: #0d1117;
+  --color-bark-900: #161d27;
+  --color-bark-800: #203142;
+  --color-bark-700: #2f4b61;
+  --color-bark-600: #4b6577;
+  --color-bark-500: #6f8794;
+  --color-bark-400: #97acb6;
+  --color-bark-300: #c0d1d6;
+  --color-bark-200: #dce7e8;
+  --color-bark-100: #eef5f4;
+  --color-bark-50: #f7fbfa;
+
+  --font-sans: 'Trebuchet MS', 'Avenir Next', 'Segoe UI', sans-serif;
+}
+
 html.light {
   color-scheme: light;
 }
@@ -48,6 +80,16 @@ body {
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
+  background:
+    radial-gradient(circle at top left, rgb(255 255 255 / 0.04), transparent 32%),
+    var(--color-forest-950);
+}
+
+html.theme-pokedex body {
+  background:
+    radial-gradient(circle at top left, rgb(248 113 113 / 0.28), transparent 34%),
+    radial-gradient(circle at 82% 12%, rgb(253 224 71 / 0.16), transparent 24%),
+    linear-gradient(180deg, #250b11 0%, #0f1117 58%, #090b10 100%);
 }
 
 /* Safe area padding for notched devices */
@@ -61,6 +103,146 @@ body {
 
 /* Smooth scrolling */
 html { scroll-behavior: smooth; }
+
+html.theme-pokedex .pokedex-header {
+  background: linear-gradient(135deg, #ef4444 0%, #d73a49 38%, #8a1b2b 100%);
+}
+
+html.theme-pokedex .pokedex-emblem {
+  background: radial-gradient(circle at 35% 35%, #fff7ed 0%, #fde68a 35%, #ef4444 36%, #991b1b 100%);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.35),
+    0 0 0 3px rgb(15 17 23 / 0.45),
+    0 8px 20px rgb(0 0 0 / 0.28);
+}
+
+html.theme-pokedex .pokedex-led {
+  box-shadow:
+    0 0 0 4px rgb(255 255 255 / 0.16),
+    0 0 18px rgb(255 224 163 / 0.7);
+}
+
+html.theme-pokedex .pokedex-screen {
+  position: relative;
+  background: linear-gradient(180deg, rgb(37 18 25 / 0.96), rgb(13 17 23 / 0.92));
+  backdrop-filter: blur(18px);
+}
+
+html.theme-pokedex .pokedex-nav {
+  background: linear-gradient(180deg, rgb(55 18 26 / 0.96), rgb(20 8 13 / 0.98));
+  backdrop-filter: blur(16px);
+}
+
+html.theme-pokedex .pokedex-panel {
+  border-width: 2px;
+  border-color: rgb(15 23 42 / 0.95);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 14px 30px rgb(0 0 0 / 0.28);
+}
+
+html.theme-pokedex .pokedex-panel-hero {
+  background: linear-gradient(135deg, rgb(239 68 68 / 0.98) 0%, rgb(153 27 27 / 0.94) 48%, rgb(15 23 42 / 0.94) 49%, rgb(17 24 39 / 0.98) 100%);
+}
+
+html.theme-pokedex .pokedex-panel-bark {
+  background: linear-gradient(180deg, rgb(24 32 48 / 0.98), rgb(11 15 24 / 0.98));
+}
+
+html.theme-pokedex .pokedex-panel-active {
+  box-shadow:
+    inset 0 0 0 2px rgb(255 224 163 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 18px 36px rgb(0 0 0 / 0.34);
+}
+
+html.theme-pokedex .pokedex-list-card {
+  align-items: center;
+  background: linear-gradient(180deg, rgb(25 35 49 / 0.96), rgb(13 19 31 / 0.98));
+}
+
+html.theme-pokedex .pokedex-info-card {
+  background: linear-gradient(180deg, rgb(24 33 45 / 0.96), rgb(12 18 29 / 0.98));
+}
+
+html.theme-pokedex .pokedex-icon-well {
+  display: grid;
+  place-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 2px solid rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+html.theme-pokedex .pokedex-button-card,
+html.theme-pokedex .pokedex-button-primary,
+html.theme-pokedex .pokedex-button-secondary,
+html.theme-pokedex .pokedex-button-danger {
+  border-width: 2px;
+  border-color: rgb(15 23 42 / 0.95);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 10px 18px rgb(0 0 0 / 0.24);
+}
+
+html.theme-pokedex .pokedex-button-card {
+  background: linear-gradient(180deg, rgb(25 35 49 / 0.96), rgb(13 19 31 / 0.98));
+}
+
+html.theme-pokedex .pokedex-button-primary {
+  background: linear-gradient(180deg, rgb(239 68 68 / 0.96), rgb(185 28 28 / 0.98));
+}
+
+html.theme-pokedex .pokedex-button-secondary {
+  background: linear-gradient(180deg, rgb(29 78 216 / 0.3), rgb(15 23 42 / 0.96));
+}
+
+html.theme-pokedex .pokedex-button-danger {
+  background: linear-gradient(180deg, rgb(127 29 29 / 0.96), rgb(69 10 10 / 0.98));
+}
+
+html.theme-pokedex .pokedex-badge,
+html.theme-pokedex .pokedex-chip,
+html.theme-pokedex .pokedex-mini-chip {
+  border: 1px solid rgb(15 23 42 / 0.7);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+html.theme-pokedex .pokedex-chip-active {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.12),
+    0 4px 10px rgb(0 0 0 / 0.16);
+}
+
+html.theme-pokedex .pokedex-mini-chip {
+  border-radius: 999px;
+}
+
+html.theme-pokedex .pokedex-inline-link {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+
+html.theme-pokedex .pokedex-search-field {
+  border-width: 2px;
+  border-color: rgb(15 23 42 / 0.95);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 10px 20px rgb(0 0 0 / 0.18);
+}
+
+html.theme-pokedex .pokedex-photo-frame {
+  border: 3px solid rgb(15 23 42 / 0.92);
+  box-shadow:
+    inset 0 0 0 2px rgb(255 255 255 / 0.08),
+    0 12px 24px rgb(0 0 0 / 0.28);
+}
+
+html.theme-pokedex .pokedex-empty-state {
+  border: 2px dashed rgb(255 224 163 / 0.2);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgb(21 29 42 / 0.5), rgb(12 18 29 / 0.3));
+}
 
 .leaflet-container {
   font: inherit;

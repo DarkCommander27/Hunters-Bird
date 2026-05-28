@@ -64,9 +64,9 @@ export function Regions() {
             <section
               key={pack.id}
               aria-labelledby={`${pack.id}-heading`}
-              className={`rounded-xl border p-4 transition-colors ${
+              className={`pokedex-panel rounded-xl border p-4 transition-colors ${
                 isActive
-                  ? 'bg-forest-800 border-forest-600'
+                  ? 'pokedex-panel-active bg-forest-800 border-forest-600'
                   : 'bg-forest-900 border-forest-800'
               }`}
             >
@@ -76,12 +76,12 @@ export function Regions() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h2 id={`${pack.id}-heading`} className="font-semibold text-forest-100">{pack.name}</h2>
                     {isActive && (
-                      <span className="text-xs bg-forest-600 text-forest-200 px-2 py-0.5 rounded-full font-medium">
+                      <span className="pokedex-badge text-xs bg-forest-600 text-forest-200 px-2 py-0.5 rounded-full font-medium">
                         Active
                       </span>
                     )}
                     {pack.isDefault && (
-                      <span className="text-xs bg-bark-800 text-bark-300 px-2 py-0.5 rounded-full font-medium">
+                      <span className="pokedex-badge text-xs bg-bark-800 text-bark-300 px-2 py-0.5 rounded-full font-medium">
                         Default
                       </span>
                     )}
@@ -92,10 +92,10 @@ export function Regions() {
                   </p>
                   <div className="flex gap-1.5 flex-wrap mt-2">
                     {pack.states.slice(0, 3).map(s => (
-                      <span key={s} className="text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">{s}</span>
+                      <span key={s} className="pokedex-mini-chip text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">{s}</span>
                     ))}
                     {pack.states.length > 3 && (
-                      <span className="text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">
+                      <span className="pokedex-mini-chip text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">
                         +{pack.states.length - 3} more
                       </span>
                     )}
@@ -110,7 +110,7 @@ export function Regions() {
                     {!isActive && hasPayload && (
                       <button
                         onClick={() => setActive(pack.id)}
-                        className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-lg font-medium transition-colors"
+                        className="pokedex-button-primary flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-lg font-medium transition-colors"
                       >
                         <CheckCircleIcon className="h-4 w-4" />
                         Set Active
@@ -119,7 +119,7 @@ export function Regions() {
                     {!pack.isDefault && (
                       <button
                         onClick={() => removePack(pack.id)}
-                        className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-900 hover:bg-red-900 border border-forest-700 text-forest-400 hover:text-red-300 rounded-lg font-medium transition-colors"
+                        className="pokedex-button-danger flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-900 hover:bg-red-900 border border-forest-700 text-forest-400 hover:text-red-300 rounded-lg font-medium transition-colors"
                       >
                         <TrashIcon className="h-4 w-4" />
                         Remove
@@ -130,7 +130,7 @@ export function Regions() {
                   <button
                     onClick={() => downloadPack(pack.id)}
                     disabled={isLoading || !hasPayload}
-                    className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 disabled:opacity-50 text-forest-100 rounded-lg font-medium transition-colors"
+                    className="pokedex-button-primary flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 disabled:opacity-50 text-forest-100 rounded-lg font-medium transition-colors"
                   >
                     <ArrowDownTrayIcon className="h-4 w-4" />
                     {!hasPayload ? 'Coming Soon' : isLoading ? 'Downloading…' : 'Download'}

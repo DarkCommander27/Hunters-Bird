@@ -83,10 +83,13 @@ export interface Sighting {
   status: 'confirmed' | 'unknown' | 'pending';
 }
 
+export type AppTheme = 'forest' | 'pokedex';
+
 export interface AppSettings {
   id: 'singleton';
   gpsEnabled: boolean;
   darkMode: boolean;
+  theme: AppTheme;
   activeRegionPackId?: string;
   downloadedPackIds: string[];
 }

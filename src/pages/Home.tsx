@@ -22,7 +22,7 @@ export function Home() {
   return (
     <div className="p-4 space-y-6">
       {/* Hero greeting */}
-      <section className="rounded-2xl bg-forest-800 border border-forest-700 p-5">
+      <section className="pokedex-panel pokedex-panel-hero rounded-2xl bg-forest-800 border border-forest-700 p-5">
         <p className="text-forest-400 text-sm font-medium uppercase tracking-widest mb-1">Active Region</p>
         {activeRegion ? (
           <>
@@ -30,10 +30,10 @@ export function Home() {
             <p className="text-forest-400 text-sm mt-1">{activeRegion.description}</p>
             <div className="flex gap-2 mt-3 flex-wrap">
               {activeRegion.states.slice(0, 4).map(s => (
-                <span key={s} className="text-xs bg-forest-700 text-forest-300 px-2 py-0.5 rounded-full">{s}</span>
+                <span key={s} className="pokedex-chip text-xs bg-forest-700 text-forest-300 px-2 py-0.5 rounded-full">{s}</span>
               ))}
               {activeRegion.states.length > 4 && (
-                <span className="text-xs bg-forest-700 text-forest-300 px-2 py-0.5 rounded-full">
+                <span className="pokedex-chip text-xs bg-forest-700 text-forest-300 px-2 py-0.5 rounded-full">
                   +{activeRegion.states.length - 4} more
                 </span>
               )}
@@ -42,7 +42,7 @@ export function Home() {
         ) : (
           <div className="text-forest-400">
             <p className="font-semibold text-forest-200">No region selected</p>
-            <Link to="/regions" className="text-forest-400 text-sm underline mt-1 block">Choose a region →</Link>
+            <Link to="/regions" className="pokedex-inline-link text-forest-400 text-sm underline mt-1 block">Choose a region →</Link>
           </div>
         )}
       </section>
@@ -61,13 +61,13 @@ export function Home() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-forest-500">Recent Sightings</h2>
-          <Link to="/sightings" className="text-forest-400 text-xs hover:text-forest-300">View all →</Link>
+          <Link to="/sightings" className="pokedex-inline-link text-forest-400 text-xs hover:text-forest-300">View all →</Link>
         </div>
         {recentSightings && recentSightings.length > 0 ? (
           <div className="space-y-2">
             {recentSightings.map(s => (
-              <div key={s.id} className="flex items-center gap-3 bg-forest-900 rounded-xl p-3 border border-forest-800">
-                <div className="h-10 w-10 rounded-lg bg-forest-800 flex items-center justify-center text-xl shrink-0">
+              <div key={s.id} className="pokedex-panel pokedex-list-card flex items-center gap-3 bg-forest-900 rounded-xl p-3 border border-forest-800">
+                <div className="pokedex-icon-well h-10 w-10 rounded-lg bg-forest-800 flex items-center justify-center text-xl shrink-0">
                   🐦
                 </div>
                 <div className="flex-1 min-w-0">
@@ -99,10 +99,10 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center gap-2 p-4 rounded-xl border font-medium text-sm transition-colors ${
+      className={`pokedex-button-card flex flex-col items-center gap-2 p-4 rounded-xl border font-medium text-sm transition-colors ${
         accent
-          ? 'bg-forest-700 border-forest-600 text-forest-100 hover:bg-forest-600'
-          : 'bg-forest-900 border-forest-800 text-forest-300 hover:bg-forest-800'
+          ? 'pokedex-button-primary bg-forest-700 border-forest-600 text-forest-100 hover:bg-forest-600'
+          : 'pokedex-button-secondary bg-forest-900 border-forest-800 text-forest-300 hover:bg-forest-800'
       }`}
     >
       {icon}
@@ -118,7 +118,7 @@ function StatusBadge({ status }: { status: string }) {
     pending:   'bg-forest-800 text-forest-400',
   };
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${map[status] ?? map.pending}`}>
+    <span className={`pokedex-badge text-xs px-2 py-0.5 rounded-full font-medium ${map[status] ?? map.pending}`}>
       {status}
     </span>
   );
@@ -128,14 +128,14 @@ function EmptyState({
   emoji, title, subtitle, action,
 }: { emoji: string; title: string; subtitle: string; action?: { label: string; to: string } }) {
   return (
-    <div className="flex flex-col items-center gap-2 py-10 text-center">
+    <div className="pokedex-empty-state flex flex-col items-center gap-2 py-10 text-center">
       <span className="text-4xl">{emoji}</span>
       <p className="font-semibold text-forest-300">{title}</p>
       <p className="text-sm text-forest-500">{subtitle}</p>
       {action && (
         <Link
           to={action.to}
-          className="mt-2 px-4 py-2 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl text-sm font-medium transition-colors"
+          className="pokedex-button-primary mt-2 px-4 py-2 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl text-sm font-medium transition-colors"
         >
           {action.label}
         </Link>

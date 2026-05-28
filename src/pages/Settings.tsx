@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { useSettings, updateSettings } from '../hooks/useSettings';
+import { normalizeAppSettings, useSettings, updateSettings } from '../hooks/useSettings';
 import { createBackupPayload, deserializePhotoAsset, parseBackupPayload } from '../lib/backup';
 import { DEFAULT_REGION_PACK_ID, resetRegionPackData } from '../lib/regionPacks';
+import { APP_THEME_OPTIONS, applyThemeToDocument } from '../lib/theme';
+import type { AppTheme } from '../types';
 
 export function Settings() {
   const settings = useSettings();
@@ -65,17 +67,17 @@ export function Settings() {
       if (!confirm('Restore this backup? This replaces local sightings and stored photos on this device.')) return;
 
       const photos = payload.photos.map(deserializePhotoAsset);
+      const restoredSettings = payload.settings ? normalizeAppSettings(payload.settings) : undefined;
       await db.transaction('rw', db.sightings, db.photos, db.settings, async () => {
         await db.sightings.clear();
         await db.photos.clear();
         if (payload.sightings.length > 0) await db.sightings.bulkPut(payload.sightings);
         if (photos.length > 0) await db.photos.bulkPut(photos);
-        if (payload.settings) await db.settings.put(payload.settings);
+        if (restoredSettings) await db.settings.put(restoredSettings);
       });
 
-      if (payload.settings) {
-        document.documentElement.classList.toggle('dark', payload.settings.darkMode);
-        document.documentElement.classList.toggle('light', !payload.settings.darkMode);
+      if (restoredSettings) {
+        applyThemeToDocument(restoredSettings);
       }
 
       setBackupMessage(`Backup restored: ${payload.sightings.length} sightings and ${photos.length} photos loaded.`);
@@ -95,14 +97,36 @@ export function Settings() {
       <section className="space-y-1">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-forest-500 mb-3">Preferences</h2>
 
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium text-forest-100">App Theme</p>
+            <p className="text-xs text-forest-500 mt-0.5">Switch between the default field guide shell and an optional retro Pokedex layout.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {APP_THEME_OPTIONS.map((option) => (
+              <ThemeCard
+                key={option.id}
+                theme={option.id}
+                label={option.label}
+                badge={option.badge}
+                description={option.description}
+                selected={settings.theme === option.id}
+                onSelect={() => {
+                  void updateSettings({ theme: option.id });
+                  applyThemeToDocument({ ...settings, theme: option.id });
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
         <ToggleRow
           label="Dark Mode"
           description="Use the dark nature-inspired theme"
           enabled={settings.darkMode}
           onChange={val => {
-            updateSettings({ darkMode: val });
-            document.documentElement.classList.toggle('dark', val);
-            document.documentElement.classList.toggle('light', !val);
+            void updateSettings({ darkMode: val });
+            applyThemeToDocument({ ...settings, darkMode: val });
           }}
         />
 
@@ -110,7 +134,7 @@ export function Settings() {
           label="GPS"
           description="Attach location to new sightings"
           enabled={settings.gpsEnabled}
-          onChange={val => updateSettings({ gpsEnabled: val })}
+          onChange={val => { void updateSettings({ gpsEnabled: val }); }}
         />
       </section>
 
@@ -205,6 +229,60 @@ function ToggleRow({
         />
       </button>
     </div>
+  );
+}
+
+function ThemeCard({
+  theme,
+  label,
+  badge,
+  description,
+  selected,
+  onSelect,
+}: {
+  theme: AppTheme;
+  label: string;
+  badge: string;
+  description: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const previewClass = theme === 'pokedex'
+    ? 'bg-[linear-gradient(140deg,#ef4444_0%,#b91c1c_44%,#111827_45%,#0f172a_100%)]'
+    : 'bg-[linear-gradient(140deg,#3a5c2b_0%,#1a1f14_55%,#0d1309_100%)]';
+
+  return (
+    <button
+      onClick={onSelect}
+      className={`rounded-2xl border p-4 text-left transition-colors ${
+        selected
+          ? 'bg-forest-800 border-forest-500'
+          : 'bg-forest-900 border-forest-800 hover:bg-forest-800'
+      }`}
+    >
+      <div className={`mb-3 h-20 rounded-xl border border-white/10 p-3 ${previewClass}`}>
+        <div className="flex h-full items-start justify-between">
+          <span className="rounded-full bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/85">
+            {badge}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-3 w-3 rounded-full bg-white/80" />
+            {theme === 'pokedex' && <span className="h-6 w-6 rounded-full border-4 border-white/35 bg-white/10" />}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-medium text-sm text-forest-100">{label}</p>
+          <p className="text-xs text-forest-500 mt-0.5">{description}</p>
+        </div>
+        {selected && (
+          <span className="rounded-full bg-forest-700 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-forest-100">
+            Active
+          </span>
+        )}
+      </div>
+    </button>
   );
 }
 

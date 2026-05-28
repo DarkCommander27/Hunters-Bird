@@ -55,7 +55,7 @@ export function BirdGuide() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search by name…"
-          className="w-full bg-forest-900 border border-forest-700 rounded-xl pl-9 pr-4 py-2.5 text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500 text-sm"
+          className="pokedex-search-field w-full bg-forest-900 border border-forest-700 rounded-xl pl-9 pr-4 py-2.5 text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500 text-sm"
         />
       </div>
 
@@ -91,16 +91,16 @@ export function BirdGuide() {
             <button
               key={species.id}
               onClick={() => setSelected(species)}
-              className="w-full text-left flex items-center gap-3 bg-forest-900 hover:bg-forest-800 border border-forest-800 rounded-xl p-3 transition-colors"
+              className="pokedex-panel pokedex-list-card w-full text-left flex items-center gap-3 bg-forest-900 hover:bg-forest-800 border border-forest-800 rounded-xl p-3 transition-colors"
             >
-              <span className="text-2xl">🐦</span>
+              <span className="pokedex-icon-well text-2xl">🐦</span>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-forest-100 truncate">{species.commonName}</p>
                 <p className="text-xs text-forest-500 italic truncate">{species.scientificName}</p>
               </div>
               <div className="flex flex-wrap gap-1 justify-end shrink-0">
                 {species.habitats.slice(0, 2).map(h => (
-                  <span key={h} className="text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">
+                  <span key={h} className="pokedex-mini-chip text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">
                     {h}
                   </span>
                 ))}
@@ -117,9 +117,9 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+      className={`pokedex-chip shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
         active
-          ? 'bg-forest-600 text-forest-100'
+          ? 'pokedex-chip-active bg-forest-600 text-forest-100'
           : 'bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-300'
       }`}
     >
@@ -168,7 +168,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
 
   return (
     <div className="p-4 space-y-5">
-      <button onClick={onBack} className="text-forest-400 hover:text-forest-200 text-sm flex items-center gap-1">
+      <button onClick={onBack} className="pokedex-inline-link pokedex-back-link text-forest-400 hover:text-forest-200 text-sm flex items-center gap-1">
         ← Back to guide
       </button>
 
@@ -182,7 +182,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
         <InfoCard label="Family" value={species.family} />
       </div>
 
-      <section className="rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
+      <section className="pokedex-panel pokedex-panel-bark rounded-2xl border border-bark-800 bg-bark-950/70 p-4 space-y-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">iNaturalist</p>
           <p className="text-sm text-bark-200 mt-1">
@@ -198,7 +198,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
           <img
             src={taxonPhotoUrl}
             alt={taxon?.preferredCommonName ?? species.commonName}
-            className="h-48 w-full rounded-xl object-cover"
+            className="pokedex-photo-frame h-48 w-full rounded-xl object-cover"
           />
         )}
 
@@ -213,7 +213,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
                 href={taxon.taxonUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 hover:text-bark-100"
+                className="pokedex-inline-link inline-flex items-center gap-1 hover:text-bark-100"
               >
                 Open on iNaturalist
                 <ArrowTopRightOnSquareIcon className="h-4 w-4" />
@@ -223,7 +223,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
                   href={taxon.wikipediaUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 hover:text-bark-100"
+                  className="pokedex-inline-link inline-flex items-center gap-1 hover:text-bark-100"
                 >
                   Wikipedia
                   <ArrowTopRightOnSquareIcon className="h-4 w-4" />
@@ -235,7 +235,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
       </section>
 
       {species.description && (
-        <div className="bg-forest-900 rounded-xl p-4 border border-forest-800">
+        <div className="pokedex-panel bg-forest-900 rounded-xl p-4 border border-forest-800">
           <p className="text-sm text-forest-300 leading-relaxed">{species.description}</p>
         </div>
       )}
@@ -244,7 +244,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
         <p className="text-xs font-semibold uppercase tracking-widest text-forest-500 mb-2">Habitats</p>
         <div className="flex flex-wrap gap-2">
           {species.habitats.map(h => (
-            <span key={h} className="text-sm bg-forest-800 text-forest-300 px-3 py-1 rounded-full">{h}</span>
+            <span key={h} className="pokedex-chip text-sm bg-forest-800 text-forest-300 px-3 py-1 rounded-full">{h}</span>
           ))}
         </div>
       </div>
@@ -253,7 +253,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
         <p className="text-xs font-semibold uppercase tracking-widest text-forest-500 mb-2">Seasonality</p>
         <div className="flex flex-wrap gap-2">
           {species.seasonality.map(s => (
-            <span key={s} className="text-sm bg-bark-900 text-bark-300 px-3 py-1 rounded-full capitalize">{s}</span>
+            <span key={s} className="pokedex-chip text-sm bg-bark-900 text-bark-300 px-3 py-1 rounded-full capitalize">{s}</span>
           ))}
         </div>
       </div>
@@ -262,7 +262,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
         <p className="text-xs font-semibold uppercase tracking-widest text-forest-500 mb-2">States</p>
         <div className="flex flex-wrap gap-1.5">
           {species.states.map(s => (
-            <span key={s} className="text-xs bg-forest-800 text-forest-400 px-2 py-0.5 rounded">{s}</span>
+            <span key={s} className="pokedex-mini-chip text-xs bg-forest-800 text-forest-400 px-2 py-0.5 rounded">{s}</span>
           ))}
         </div>
       </div>
@@ -279,7 +279,7 @@ function SpeciesDetail({ species, onBack }: { species: BirdSpecies; onBack: () =
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-forest-900 rounded-xl p-3 border border-forest-800">
+    <div className="pokedex-panel pokedex-info-card bg-forest-900 rounded-xl p-3 border border-forest-800">
       <p className="text-xs text-forest-500 uppercase tracking-widest">{label}</p>
       <p className="font-medium text-forest-200 mt-0.5">{value}</p>
     </div>
