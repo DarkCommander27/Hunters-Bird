@@ -1,0 +1,93 @@
+[
+  {
+    "id": "rm-001",
+    "commonName": "Clark's Nutcracker",
+    "scientificName": "Nucifraga columbiana",
+    "order": "Passeriformes",
+    "family": "Corvidae",
+    "habitats": ["Mountain", "Forest"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana", "Idaho"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Pale gray mountain corvid closely tied to whitebark pine forests and alpine ridges."
+  },
+  {
+    "id": "rm-002",
+    "commonName": "Mountain Bluebird",
+    "scientificName": "Sialia currucoides",
+    "order": "Passeriformes",
+    "family": "Turdidae",
+    "habitats": ["Mountain", "Grassland"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana", "Idaho"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Open-country thrush with brilliant sky-blue plumage, often perched on fence lines."
+  },
+  {
+    "id": "rm-003",
+    "commonName": "White-tailed Ptarmigan",
+    "scientificName": "Lagopus leucura",
+    "order": "Galliformes",
+    "family": "Phasianidae",
+    "habitats": ["Mountain"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "High-alpine grouse that changes from mottled brown to white with the seasons."
+  },
+  {
+    "id": "rm-004",
+    "commonName": "American Dipper",
+    "scientificName": "Cinclus mexicanus",
+    "order": "Passeriformes",
+    "family": "Cinclidae",
+    "habitats": ["River/Stream", "Mountain"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana", "Idaho"],
+    "seasonality": ["year-round"],
+    "aliases": ["Water Ouzel"],
+    "description": "Stocky dark songbird that walks underwater in cold mountain streams to find aquatic insects."
+  },
+  {
+    "id": "rm-005",
+    "commonName": "Williamson's Sapsucker",
+    "scientificName": "Sphyrapicus thyroideus",
+    "order": "Piciformes",
+    "family": "Picidae",
+    "habitats": ["Forest", "Mountain"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana", "Idaho"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Mountain conifer woodpecker with dramatic black, white, and yellow plumage."
+  },
+  {
+    "id": "rm-006",
+    "commonName": "Brown-capped Rosy-Finch",
+    "scientificName": "Leucosticte australis",
+    "order": "Passeriformes",
+    "family": "Fringillidae",
+    "habitats": ["Mountain"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana"],
+    "seasonality": ["fall", "winter", "spring"],
+    "aliases": [],
+    "description": "High-country finch that nests near alpine tundra and descends to windswept slopes in winter."
+  },
+  {
+    "id": "rm-007",
+    "commonName": "Golden Eagle",
+    "scientificName": "Aquila chrysaetos",
+    "order": "Accipitriformes",
+    "family": "Accipitridae",
+    "habitats": ["Mountain", "Grassland"],
+    "regions": ["rocky-mountains"],
+    "states": ["Colorado", "Wyoming", "Montana", "Idaho"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Large dark eagle of ridgelines, basins, and open mountain country."
+  }
+]

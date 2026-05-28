@@ -4,6 +4,7 @@ import { ArrowTopRightOnSquareIcon, MagnifyingGlassIcon } from '@heroicons/react
 import { db } from '../db/database';
 import { fetchINaturalistTaxon, getCachedINaturalistTaxonEntry, getINaturalistPhotoUrl } from '../lib/inaturalist';
 import { useSettings } from '../hooks/useSettings';
+import { hasRegionPackPayload } from '../lib/regionPacks';
 import type { BirdSpecies, INaturalistTaxonSummary } from '../types';
 
 const HABITATS = ['Forest', 'Wetland', 'Grassland', 'Mountain', 'Urban/Suburban', 'River/Stream', 'Lake/Pond'];
@@ -40,6 +41,8 @@ export function BirdGuide() {
     return <SpeciesDetail species={selected} onBack={() => setSelected(null)} />;
   }
 
+  const activePackReady = !settings.activeRegionPackId || hasRegionPackPayload(settings.activeRegionPackId);
+
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold text-forest-100">Bird Guide</h1>
@@ -73,8 +76,14 @@ export function BirdGuide() {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-16 text-center">
           <span className="text-4xl">🔍</span>
-          <p className="text-forest-300 font-semibold">No birds found</p>
-          <p className="text-forest-500 text-sm">Try a different search or habitat filter.</p>
+          <p className="text-forest-300 font-semibold">
+            {activePackReady ? 'No birds found' : 'This region pack is not ready yet'}
+          </p>
+          <p className="text-forest-500 text-sm">
+            {activePackReady
+              ? 'Try a different search or habitat filter.'
+              : 'Choose a different downloaded region pack to browse species.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-2">

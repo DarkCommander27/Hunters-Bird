@@ -1,0 +1,93 @@
+[
+  {
+    "id": "gp-001",
+    "commonName": "Western Meadowlark",
+    "scientificName": "Sturnella neglecta",
+    "order": "Passeriformes",
+    "family": "Icteridae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "South Dakota", "North Dakota"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Prairie songbird with a bright yellow breast and a rich, flutelike territorial song."
+  },
+  {
+    "id": "gp-002",
+    "commonName": "Burrowing Owl",
+    "scientificName": "Athene cunicularia",
+    "order": "Strigiformes",
+    "family": "Strigidae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "Oklahoma", "South Dakota"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Small long-legged owl that nests underground and hunts from fence posts and prairie mounds."
+  },
+  {
+    "id": "gp-003",
+    "commonName": "Greater Prairie-Chicken",
+    "scientificName": "Tympanuchus cupido",
+    "order": "Galliformes",
+    "family": "Phasianidae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "Oklahoma"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Stocky prairie grouse best known for spring lek displays with orange air sacs."
+  },
+  {
+    "id": "gp-004",
+    "commonName": "Ferruginous Hawk",
+    "scientificName": "Buteo regalis",
+    "order": "Accipitriformes",
+    "family": "Accipitridae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "South Dakota", "North Dakota"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Powerful pale hawk of open prairie, often perched on utility poles or gliding low over range."
+  },
+  {
+    "id": "gp-005",
+    "commonName": "Long-billed Curlew",
+    "scientificName": "Numenius americanus",
+    "order": "Charadriiformes",
+    "family": "Scolopacidae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "South Dakota", "North Dakota"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Large cinnamon shorebird of shortgrass prairie, famous for its extraordinarily long bill."
+  },
+  {
+    "id": "gp-006",
+    "commonName": "Upland Sandpiper",
+    "scientificName": "Bartramia longicauda",
+    "order": "Charadriiformes",
+    "family": "Scolopacidae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "Oklahoma", "South Dakota"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Slim long-necked shorebird that nests in native prairie and grazed grasslands far from water."
+  },
+  {
+    "id": "gp-007",
+    "commonName": "Lark Bunting",
+    "scientificName": "Calamospiza melanocorys",
+    "order": "Passeriformes",
+    "family": "Passerellidae",
+    "habitats": ["Grassland"],
+    "regions": ["great-plains"],
+    "states": ["Kansas", "Nebraska", "Oklahoma", "South Dakota"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Prairie bunting of shrubby grassland, with black-and-white breeding males and fluttering song flights."
+  }
+]

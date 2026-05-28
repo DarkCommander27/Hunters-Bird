@@ -1,39 +1,19 @@
 import { db } from './database';
-import { AVAILABLE_REGION_PACKS, APPALACHIA_SPECIES } from '../data/seed';
-import type { AppSettings } from '../types';
+import { DEFAULT_SETTINGS, DEFAULT_REGION_PACK_ID, installRegionPack, syncRegionPackCatalog } from '../lib/regionPacks';
 
 /** Run once on first launch to populate initial data. */
 export async function initializeDatabase(): Promise<void> {
   // Settings singleton
   const existing = await db.settings.get('singleton');
   if (!existing) {
-    const defaults: AppSettings = {
-      id: 'singleton',
-      gpsEnabled: true,
-      darkMode: true,
-      activeRegionPackId: 'appalachia',
-      downloadedPackIds: ['appalachia'],
-    };
-    await db.settings.put(defaults);
+    await db.settings.put(DEFAULT_SETTINGS);
   }
 
-  // Seed region packs (upsert — safe to re-run)
-  for (const pack of AVAILABLE_REGION_PACKS) {
-    const stored = await db.regionPacks.get(pack.id);
-    if (!stored) {
-      // Mark Appalachia as pre-downloaded for the first run
-      const record = pack.id === 'appalachia'
-        ? { ...pack, downloadedAt: Date.now() }
-        : pack;
-      await db.regionPacks.put(record);
-    }
-  }
+  await syncRegionPackCatalog();
 
-  // Seed Appalachia species
-  for (const species of APPALACHIA_SPECIES) {
-    const stored = await db.birdSpecies.get(species.id);
-    if (!stored) {
-      await db.birdSpecies.put(species);
-    }
+  const defaultSpeciesCount = await db.birdSpecies.where('regions').equals(DEFAULT_REGION_PACK_ID).count();
+  const defaultPack = await db.regionPacks.get(DEFAULT_REGION_PACK_ID);
+  if (!defaultPack?.downloadedAt || defaultSpeciesCount === 0) {
+    await installRegionPack(DEFAULT_REGION_PACK_ID);
   }
 }

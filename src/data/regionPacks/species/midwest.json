@@ -1,0 +1,93 @@
+[
+  {
+    "id": "mw-001",
+    "commonName": "Sandhill Crane",
+    "scientificName": "Antigone canadensis",
+    "order": "Gruiformes",
+    "family": "Gruidae",
+    "habitats": ["Wetland", "Grassland"],
+    "regions": ["midwest"],
+    "states": ["Wisconsin", "Minnesota", "Michigan", "Illinois"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Tall gray crane with a red crown, often heard bugling over marshes and farm fields."
+  },
+  {
+    "id": "mw-002",
+    "commonName": "Red-headed Woodpecker",
+    "scientificName": "Melanerpes erythrocephalus",
+    "order": "Piciformes",
+    "family": "Picidae",
+    "habitats": ["Forest", "Grassland"],
+    "regions": ["midwest"],
+    "states": ["Illinois", "Indiana", "Iowa", "Missouri"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Bold black-and-white woodpecker with an unmistakable crimson head."
+  },
+  {
+    "id": "mw-003",
+    "commonName": "Common Goldeneye",
+    "scientificName": "Bucephala clangula",
+    "order": "Anseriformes",
+    "family": "Anatidae",
+    "habitats": ["Lake/Pond", "River/Stream"],
+    "regions": ["midwest"],
+    "states": ["Michigan", "Wisconsin", "Minnesota"],
+    "seasonality": ["fall", "winter", "spring"],
+    "aliases": [],
+    "description": "Diving duck of Great Lakes waters, recognized by its bright yellow eye and white face spot."
+  },
+  {
+    "id": "mw-004",
+    "commonName": "Bobolink",
+    "scientificName": "Dolichonyx oryzivorus",
+    "order": "Passeriformes",
+    "family": "Icteridae",
+    "habitats": ["Grassland"],
+    "regions": ["midwest"],
+    "states": ["Wisconsin", "Minnesota", "Michigan", "Iowa"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Long-distance migrant of hayfields and prairies, with a bubbling song over tall grass."
+  },
+  {
+    "id": "mw-005",
+    "commonName": "Trumpeter Swan",
+    "scientificName": "Cygnus buccinator",
+    "order": "Anseriformes",
+    "family": "Anatidae",
+    "habitats": ["Lake/Pond", "Wetland"],
+    "regions": ["midwest"],
+    "states": ["Minnesota", "Wisconsin", "Michigan"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Massive native swan that has rebounded across marshes, lakes, and wildlife refuges."
+  },
+  {
+    "id": "mw-006",
+    "commonName": "Piping Plover",
+    "scientificName": "Charadrius melodus",
+    "order": "Charadriiformes",
+    "family": "Charadriidae",
+    "habitats": ["Lake/Pond", "Grassland"],
+    "regions": ["midwest"],
+    "states": ["Michigan", "Wisconsin", "Illinois", "Indiana"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Tiny pale shorebird of Great Lakes beaches and sandy shoreline nesting habitat."
+  },
+  {
+    "id": "mw-007",
+    "commonName": "American White Pelican",
+    "scientificName": "Pelecanus erythrorhynchos",
+    "order": "Pelecaniformes",
+    "family": "Pelecanidae",
+    "habitats": ["Lake/Pond", "River/Stream"],
+    "regions": ["midwest"],
+    "states": ["Minnesota", "Wisconsin", "Illinois", "Missouri"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Huge bright white pelican that glides over reservoirs and rivers in coordinated feeding flocks."
+  }
+]

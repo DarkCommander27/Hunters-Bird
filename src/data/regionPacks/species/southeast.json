@@ -1,0 +1,93 @@
+[
+  {
+    "id": "se-001",
+    "commonName": "Roseate Spoonbill",
+    "scientificName": "Platalea ajaja",
+    "order": "Pelecaniformes",
+    "family": "Threskiornithidae",
+    "habitats": ["Wetland", "Lake/Pond"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Louisiana", "Mississippi"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Pink wading bird with a spoon-shaped bill, common in shallow coastal wetlands."
+  },
+  {
+    "id": "se-002",
+    "commonName": "Brown Pelican",
+    "scientificName": "Pelecanus occidentalis",
+    "order": "Pelecaniformes",
+    "family": "Pelecanidae",
+    "habitats": ["Lake/Pond", "River/Stream"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Louisiana", "Mississippi"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Large coastal pelican famous for plunge-diving into saltwater bays and shorelines."
+  },
+  {
+    "id": "se-003",
+    "commonName": "Red-cockaded Woodpecker",
+    "scientificName": "Dryobates borealis",
+    "order": "Piciformes",
+    "family": "Picidae",
+    "habitats": ["Forest"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Arkansas", "Louisiana", "Mississippi"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Endangered pine-woods woodpecker that nests in living longleaf pine trees."
+  },
+  {
+    "id": "se-004",
+    "commonName": "Painted Bunting",
+    "scientificName": "Passerina ciris",
+    "order": "Passeriformes",
+    "family": "Cardinalidae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Louisiana", "Mississippi", "Arkansas"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Brilliant multicolored songbird of brushy edges, hedgerows, and feeders in the warm season."
+  },
+  {
+    "id": "se-005",
+    "commonName": "Wood Stork",
+    "scientificName": "Mycteria americana",
+    "order": "Ciconiiformes",
+    "family": "Ciconiidae",
+    "habitats": ["Wetland", "Lake/Pond"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Louisiana", "Mississippi"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Large bald-headed wader that sweeps shallow marshes and rookeries across the Gulf Coast."
+  },
+  {
+    "id": "se-006",
+    "commonName": "Mississippi Kite",
+    "scientificName": "Ictinia mississippiensis",
+    "order": "Accipitriformes",
+    "family": "Accipitridae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southeast"],
+    "states": ["Arkansas", "Louisiana", "Mississippi"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Graceful pale-gray kite that hawks insects above towns, floodplains, and open woods."
+  },
+  {
+    "id": "se-007",
+    "commonName": "Purple Gallinule",
+    "scientificName": "Porphyrio martinicus",
+    "order": "Gruiformes",
+    "family": "Rallidae",
+    "habitats": ["Wetland", "Lake/Pond"],
+    "regions": ["southeast"],
+    "states": ["Florida", "Louisiana", "Mississippi"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Colorful marsh bird with a red-and-yellow bill and oversized feet for walking on lily pads."
+  }
+]

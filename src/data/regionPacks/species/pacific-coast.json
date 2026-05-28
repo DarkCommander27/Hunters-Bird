@@ -1,0 +1,93 @@
+[
+  {
+    "id": "pc-001",
+    "commonName": "Tufted Puffin",
+    "scientificName": "Fratercula cirrhata",
+    "order": "Charadriiformes",
+    "family": "Alcidae",
+    "habitats": ["Lake/Pond"],
+    "regions": ["pacific-coast"],
+    "states": ["Washington", "Oregon", "California"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Pacific alcid with golden head plumes and a heavy red-orange bill."
+  },
+  {
+    "id": "pc-002",
+    "commonName": "Anna's Hummingbird",
+    "scientificName": "Calypte anna",
+    "order": "Apodiformes",
+    "family": "Trochilidae",
+    "habitats": ["Urban/Suburban", "Forest"],
+    "regions": ["pacific-coast"],
+    "states": ["California", "Oregon", "Washington"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "West Coast hummingbird that remains through winter in gardens, chaparral, and city parks."
+  },
+  {
+    "id": "pc-003",
+    "commonName": "Black Oystercatcher",
+    "scientificName": "Haematopus bachmani",
+    "order": "Charadriiformes",
+    "family": "Haematopodidae",
+    "habitats": ["Lake/Pond", "River/Stream"],
+    "regions": ["pacific-coast"],
+    "states": ["Washington", "Oregon", "California"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Rocky-shore specialist with sooty plumage, pink legs, and a long orange bill."
+  },
+  {
+    "id": "pc-004",
+    "commonName": "Marbled Murrelet",
+    "scientificName": "Brachyramphus marmoratus",
+    "order": "Charadriiformes",
+    "family": "Alcidae",
+    "habitats": ["Lake/Pond", "Forest"],
+    "regions": ["pacific-coast"],
+    "states": ["Washington", "Oregon", "California"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Small seabird tied to old-growth coastal forest for nesting, but most often seen on nearshore water."
+  },
+  {
+    "id": "pc-005",
+    "commonName": "California Quail",
+    "scientificName": "Callipepla californica",
+    "order": "Galliformes",
+    "family": "Odontophoridae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["pacific-coast"],
+    "states": ["California", "Oregon", "Washington"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Plump crested quail of chaparral, oak edges, and neighborhood plantings."
+  },
+  {
+    "id": "pc-006",
+    "commonName": "Varied Thrush",
+    "scientificName": "Ixoreus naevius",
+    "order": "Passeriformes",
+    "family": "Turdidae",
+    "habitats": ["Forest"],
+    "regions": ["pacific-coast"],
+    "states": ["Washington", "Oregon", "California"],
+    "seasonality": ["fall", "winter", "spring"],
+    "aliases": [],
+    "description": "Pacific forest thrush with bold orange-and-slate markings and an eerie single-note whistle."
+  },
+  {
+    "id": "pc-007",
+    "commonName": "Steller's Jay",
+    "scientificName": "Cyanocitta stelleri",
+    "order": "Passeriformes",
+    "family": "Corvidae",
+    "habitats": ["Forest", "Urban/Suburban"],
+    "regions": ["pacific-coast"],
+    "states": ["Washington", "Oregon", "California"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Crested blue-and-black jay of conifer woods, campgrounds, and mountain towns along the coast."
+  }
+]

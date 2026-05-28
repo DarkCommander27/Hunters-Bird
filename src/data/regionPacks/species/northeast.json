@@ -1,0 +1,93 @@
+[
+  {
+    "id": "ne-001",
+    "commonName": "Atlantic Puffin",
+    "scientificName": "Fratercula arctica",
+    "order": "Charadriiformes",
+    "family": "Alcidae",
+    "habitats": ["Lake/Pond"],
+    "regions": ["northeast"],
+    "states": ["Maine", "Massachusetts", "Rhode Island"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Seabird with a bright triangular bill, most often seen off rocky islands in the Gulf of Maine."
+  },
+  {
+    "id": "ne-002",
+    "commonName": "Black-capped Chickadee",
+    "scientificName": "Poecile atricapillus",
+    "order": "Passeriformes",
+    "family": "Paridae",
+    "habitats": ["Forest", "Urban/Suburban"],
+    "regions": ["northeast"],
+    "states": ["Vermont", "New Hampshire", "Massachusetts", "New York"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Familiar northern songbird with a bold black cap and an inquisitive, active feeding style."
+  },
+  {
+    "id": "ne-003",
+    "commonName": "Common Loon",
+    "scientificName": "Gavia immer",
+    "order": "Gaviiformes",
+    "family": "Gaviidae",
+    "habitats": ["Lake/Pond"],
+    "regions": ["northeast"],
+    "states": ["Maine", "Vermont", "New Hampshire", "New York"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": ["Great Northern Loon"],
+    "description": "Iconic northern lake bird with a checkered back and eerie, far-carrying calls."
+  },
+  {
+    "id": "ne-004",
+    "commonName": "Northern Cardinal",
+    "scientificName": "Cardinalis cardinalis",
+    "order": "Passeriformes",
+    "family": "Cardinalidae",
+    "habitats": ["Forest", "Urban/Suburban"],
+    "regions": ["northeast"],
+    "states": ["New York", "New Jersey", "Delaware", "Connecticut", "Massachusetts"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Familiar crimson songbird of woodland edges, suburbs, and backyard thickets."
+  },
+  {
+    "id": "ne-005",
+    "commonName": "Snowy Owl",
+    "scientificName": "Bubo scandiacus",
+    "order": "Strigiformes",
+    "family": "Strigidae",
+    "habitats": ["Grassland", "Lake/Pond"],
+    "regions": ["northeast"],
+    "states": ["Maine", "Massachusetts", "Rhode Island", "New York", "New Jersey"],
+    "seasonality": ["fall", "winter"],
+    "aliases": [],
+    "description": "Large pale owl that irrupts into dunes, shorelines, and open fields during winter."
+  },
+  {
+    "id": "ne-006",
+    "commonName": "Black Skimmer",
+    "scientificName": "Rynchops niger",
+    "order": "Charadriiformes",
+    "family": "Laridae",
+    "habitats": ["Lake/Pond", "River/Stream"],
+    "regions": ["northeast"],
+    "states": ["Massachusetts", "Rhode Island", "Connecticut", "New Jersey", "Delaware"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Striking coastal bird that feeds by slicing its long lower mandible across calm water."
+  },
+  {
+    "id": "ne-007",
+    "commonName": "Peregrine Falcon",
+    "scientificName": "Falco peregrinus",
+    "order": "Falconiformes",
+    "family": "Falconidae",
+    "habitats": ["Mountain", "Urban/Suburban"],
+    "regions": ["northeast"],
+    "states": ["New York", "New Jersey", "Massachusetts", "Vermont", "New Hampshire"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Fast-flying falcon found on sea cliffs, mountain ledges, and increasingly city high-rises."
+  }
+]

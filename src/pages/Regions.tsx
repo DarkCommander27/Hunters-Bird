@@ -4,6 +4,7 @@ import { CheckCircleIcon, ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/
 import { db } from '../db/database';
 import { useSettings, updateSettings } from '../hooks/useSettings';
 import { AVAILABLE_REGION_PACKS } from '../data/seed';
+import { getDownloadedFallbackRegionPackId, hasRegionPackPayload, installRegionPack, uninstallRegionPack } from '../lib/regionPacks';
 
 export function Regions() {
   const settings = useSettings();
@@ -19,10 +20,8 @@ export function Regions() {
   async function downloadPack(packId: string) {
     setLoading(packId);
     try {
-      // Simulate download (in production this would fetch a JSON pack)
       await new Promise(r => setTimeout(r, 800));
-      const def = AVAILABLE_REGION_PACKS.find(p => p.id === packId)!;
-      await db.regionPacks.put({ ...def, downloadedAt: Date.now() });
+      await installRegionPack(packId);
       await updateSettings({
         downloadedPackIds: [...new Set([...settings.downloadedPackIds, packId])],
       });
@@ -33,16 +32,16 @@ export function Regions() {
 
   async function removePack(packId: string) {
     if (packId === 'appalachia') return; // protect default
-    await db.regionPacks.put({
-      ...(storedPacks?.find(p => p.id === packId) ?? AVAILABLE_REGION_PACKS.find(p => p.id === packId)!),
-      downloadedAt: undefined,
-    });
+    await uninstallRegionPack(packId);
     const next = settings.downloadedPackIds.filter(id => id !== packId);
-    const active = settings.activeRegionPackId === packId ? (next[0] ?? undefined) : settings.activeRegionPackId;
+    const active = settings.activeRegionPackId === packId
+      ? getDownloadedFallbackRegionPackId(next)
+      : settings.activeRegionPackId;
     await updateSettings({ downloadedPackIds: next, activeRegionPackId: active });
   }
 
   async function setActive(packId: string) {
+    if (!hasRegionPackPayload(packId)) return;
     await updateSettings({ activeRegionPackId: packId });
   }
 
@@ -59,10 +58,12 @@ export function Regions() {
           const isDownloaded = !!pack.downloadedAt;
           const isActive = settings.activeRegionPackId === pack.id;
           const isLoading = loading === pack.id;
+          const hasPayload = hasRegionPackPayload(pack.id);
 
           return (
-            <div
+            <section
               key={pack.id}
+              aria-labelledby={`${pack.id}-heading`}
               className={`rounded-xl border p-4 transition-colors ${
                 isActive
                   ? 'bg-forest-800 border-forest-600'
@@ -73,7 +74,7 @@ export function Regions() {
                 <span className="text-2xl mt-0.5">🗺️</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="font-semibold text-forest-100">{pack.name}</h2>
+                    <h2 id={`${pack.id}-heading`} className="font-semibold text-forest-100">{pack.name}</h2>
                     {isActive && (
                       <span className="text-xs bg-forest-600 text-forest-200 px-2 py-0.5 rounded-full font-medium">
                         Active
@@ -86,9 +87,9 @@ export function Regions() {
                     )}
                   </div>
                   <p className="text-sm text-forest-400 mt-1">{pack.description}</p>
-                  {pack.speciesCount > 0 && (
-                    <p className="text-xs text-forest-500 mt-1">{pack.speciesCount} species</p>
-                  )}
+                  <p className="text-xs text-forest-500 mt-1">
+                    {hasPayload ? `${pack.speciesCount} species available offline` : 'Species data coming soon'}
+                  </p>
                   <div className="flex gap-1.5 flex-wrap mt-2">
                     {pack.states.slice(0, 3).map(s => (
                       <span key={s} className="text-xs bg-forest-800 text-forest-400 px-1.5 py-0.5 rounded">{s}</span>
@@ -106,7 +107,7 @@ export function Regions() {
               <div className="flex gap-2 mt-3 flex-wrap">
                 {isDownloaded ? (
                   <>
-                    {!isActive && (
+                    {!isActive && hasPayload && (
                       <button
                         onClick={() => setActive(pack.id)}
                         className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-lg font-medium transition-colors"
@@ -128,15 +129,15 @@ export function Regions() {
                 ) : (
                   <button
                     onClick={() => downloadPack(pack.id)}
-                    disabled={isLoading}
+                    disabled={isLoading || !hasPayload}
                     className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-forest-700 hover:bg-forest-600 disabled:opacity-50 text-forest-100 rounded-lg font-medium transition-colors"
                   >
                     <ArrowDownTrayIcon className="h-4 w-4" />
-                    {isLoading ? 'Downloading…' : 'Download'}
+                    {!hasPayload ? 'Coming Soon' : isLoading ? 'Downloading…' : 'Download'}
                   </button>
                 )}
               </div>
-            </div>
+            </section>
           );
         })}
       </div>

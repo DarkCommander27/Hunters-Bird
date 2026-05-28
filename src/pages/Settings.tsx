@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { useSettings, updateSettings } from '../hooks/useSettings';
 import { createBackupPayload, deserializePhotoAsset, parseBackupPayload } from '../lib/backup';
+import { DEFAULT_REGION_PACK_ID, resetRegionPackData } from '../lib/regionPacks';
 
 export function Settings() {
   const settings = useSettings();
@@ -21,8 +22,10 @@ export function Settings() {
     await Promise.all([
       db.sightings.clear(),
       db.photos.clear(),
+      db.inaturalistTaxa.clear(),
     ]);
-    await updateSettings({ downloadedPackIds: ['appalachia'] });
+    await resetRegionPackData();
+    await updateSettings({ downloadedPackIds: [DEFAULT_REGION_PACK_ID], activeRegionPackId: DEFAULT_REGION_PACK_ID });
   }
 
   async function exportBackup() {

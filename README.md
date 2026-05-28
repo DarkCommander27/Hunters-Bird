@@ -47,6 +47,9 @@ npm run lint
 
 # Run tests
 npm run test:run
+
+# Validate region pack JSON data
+npm run validate:region-packs
 ```
 
 ## AI Bird ID Demo
@@ -95,13 +98,13 @@ src/
 | Region | Status |
 |--------|--------|
 | **Appalachia** | ✅ Included (24 species) |
-| Northeast | Available to download |
-| Southeast | Available to download |
-| Midwest | Available to download |
-| Great Plains | Available to download |
-| Southwest | Available to download |
-| Rocky Mountains | Available to download |
-| Pacific Coast | Available to download |
+| Northeast | Available to download (7 species) |
+| Southeast | Available to download (7 species) |
+| Midwest | Available to download (7 species) |
+| Great Plains | Available to download (7 species) |
+| Southwest | Available to download (7 species) |
+| Rocky Mountains | Available to download (7 species) |
+| Pacific Coast | Available to download (7 species) |
 
 ## Roadmap / Follow-up
 

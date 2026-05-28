@@ -1,0 +1,93 @@
+[
+  {
+    "id": "sw-001",
+    "commonName": "Greater Roadrunner",
+    "scientificName": "Geococcyx californianus",
+    "order": "Cuculiformes",
+    "family": "Cuculidae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Texas", "New Mexico", "Arizona"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Ground-running desert cuckoo with a long tail, crest, and taste for lizards and insects."
+  },
+  {
+    "id": "sw-002",
+    "commonName": "Cactus Wren",
+    "scientificName": "Campylorhynchus brunneicapillus",
+    "order": "Passeriformes",
+    "family": "Troglodytidae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Arizona", "Nevada", "New Mexico"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Large noisy wren of arid scrub, often nesting in cholla or other thorny desert plants."
+  },
+  {
+    "id": "sw-003",
+    "commonName": "Gambel's Quail",
+    "scientificName": "Callipepla gambelii",
+    "order": "Galliformes",
+    "family": "Odontophoridae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Arizona", "Nevada", "Utah", "New Mexico"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Desert quail with a forward-curving topknot and chestnut flanks."
+  },
+  {
+    "id": "sw-004",
+    "commonName": "Vermilion Flycatcher",
+    "scientificName": "Pyrocephalus rubinus",
+    "order": "Passeriformes",
+    "family": "Tyrannidae",
+    "habitats": ["River/Stream", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Texas", "Arizona", "New Mexico"],
+    "seasonality": ["spring", "summer", "fall"],
+    "aliases": [],
+    "description": "Brilliant red flycatcher that hunts from exposed perches near desert washes and parks."
+  },
+  {
+    "id": "sw-005",
+    "commonName": "Harris's Hawk",
+    "scientificName": "Parabuteo unicinctus",
+    "order": "Accipitriformes",
+    "family": "Accipitridae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Texas", "Arizona", "New Mexico"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Social desert hawk often seen hunting in cooperative family groups."
+  },
+  {
+    "id": "sw-006",
+    "commonName": "Black-chinned Hummingbird",
+    "scientificName": "Archilochus alexandri",
+    "order": "Apodiformes",
+    "family": "Trochilidae",
+    "habitats": ["River/Stream", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Texas", "New Mexico", "Arizona", "Utah"],
+    "seasonality": ["spring", "summer"],
+    "aliases": [],
+    "description": "Common hummingbird of canyons, desert gardens, and riparian corridors across the interior West."
+  },
+  {
+    "id": "sw-007",
+    "commonName": "Curve-billed Thrasher",
+    "scientificName": "Toxostoma curvirostre",
+    "order": "Passeriformes",
+    "family": "Mimidae",
+    "habitats": ["Grassland", "Urban/Suburban"],
+    "regions": ["southwest"],
+    "states": ["Texas", "Arizona", "New Mexico"],
+    "seasonality": ["year-round"],
+    "aliases": [],
+    "description": "Long-billed desert songbird that forages in cactus scrub and suburban xeriscapes."
+  }
+]
