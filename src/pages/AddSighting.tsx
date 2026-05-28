@@ -213,7 +213,7 @@ export function AddSighting() {
       <section className="space-y-2">
         <label className="text-xs font-semibold uppercase tracking-widest text-forest-500">Photo</label>
         {photoPreview ? (
-          <div className="relative rounded-xl overflow-hidden">
+          <div className="pokedex-photo-frame relative rounded-xl overflow-hidden">
             <img src={photoPreview} alt="Bird sighting" className="w-full h-56 object-cover" />
             <button
               onClick={() => { setPhotoPreview(null); setPhotoBlob(null); }}
@@ -226,14 +226,14 @@ export function AddSighting() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => cameraRef.current?.click()}
-              className="flex flex-col items-center gap-2 py-6 bg-forest-900 border border-forest-700 border-dashed rounded-xl text-forest-400 hover:text-forest-200 hover:border-forest-500 transition-colors"
+              className="pokedex-button-card flex flex-col items-center gap-2 py-6 bg-forest-900 border border-forest-700 border-dashed rounded-xl text-forest-400 hover:text-forest-200 hover:border-forest-500 transition-colors"
             >
               <CameraIcon className="h-7 w-7" />
               <span className="text-sm font-medium">Take Photo</span>
             </button>
             <button
               onClick={() => fileRef.current?.click()}
-              className="flex flex-col items-center gap-2 py-6 bg-forest-900 border border-forest-700 border-dashed rounded-xl text-forest-400 hover:text-forest-200 hover:border-forest-500 transition-colors"
+              className="pokedex-button-card flex flex-col items-center gap-2 py-6 bg-forest-900 border border-forest-700 border-dashed rounded-xl text-forest-400 hover:text-forest-200 hover:border-forest-500 transition-colors"
             >
               <PhotoIcon className="h-7 w-7" />
               <span className="text-sm font-medium">Choose Photo</span>
@@ -250,14 +250,14 @@ export function AddSighting() {
         <button
           onClick={identifySpecies}
           disabled={identifyLoading || (!photoBlob && !notes.trim() && selectedHabitats.length === 0)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-bark-900 border border-bark-700 rounded-xl text-sm font-medium text-bark-200 hover:bg-bark-800 transition-colors disabled:opacity-50"
+          className="pokedex-button-secondary w-full flex items-center justify-center gap-2 px-4 py-3 bg-bark-900 border border-bark-700 rounded-xl text-sm font-medium text-bark-200 hover:bg-bark-800 transition-colors disabled:opacity-50"
         >
           <SparklesIcon className="h-5 w-5" />
           {identifyLoading ? 'Analyzing bird clues…' : `Identify with ${demoBirdIdentifier.label}`}
         </button>
         <button
           onClick={() => setShowSpeciesPicker(true)}
-          className="w-full text-left px-4 py-3 bg-forest-900 border border-forest-700 rounded-xl text-sm transition-colors hover:border-forest-500"
+          className="pokedex-form-field w-full text-left px-4 py-3 bg-forest-900 border border-forest-700 rounded-xl text-sm transition-colors hover:border-forest-500"
         >
           {selectedSpecies ? (
             <span className="text-forest-100 font-medium">{selectedSpecies.commonName}</span>
@@ -267,14 +267,14 @@ export function AddSighting() {
         </button>
 
         {aiSuggestion && (
-          <div className="rounded-xl border border-bark-700 bg-bark-950/60 p-4 space-y-2">
+          <div className="pokedex-panel pokedex-panel-bark rounded-xl border border-bark-700 bg-bark-950/60 p-4 space-y-2">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-bark-400">AI Suggestion</p>
                 <p className="text-base font-semibold text-bark-100">{displayedAiCandidate?.species.commonName}</p>
                 <p className="text-xs italic text-bark-300">{displayedAiCandidate?.species.scientificName}</p>
               </div>
-              <span className="rounded-full bg-bark-800 px-2.5 py-1 text-xs font-semibold text-bark-200">
+              <span className="pokedex-badge rounded-full bg-bark-800 px-2.5 py-1 text-xs font-semibold text-bark-200">
                 {Math.round((displayedAiCandidate?.confidence ?? aiSuggestion.confidence) * 100)}% match
               </span>
             </div>
@@ -285,12 +285,12 @@ export function AddSighting() {
               ))}
             </ul>
             {displayedAiCandidate?.inaturalistTaxon && (
-              <div className="rounded-xl border border-bark-800 bg-bark-900/40 p-3 flex gap-3 items-start">
+              <div className="pokedex-panel pokedex-panel-bark rounded-xl border border-bark-800 bg-bark-900/40 p-3 flex gap-3 items-start">
                 {displayedAiCandidate.inaturalistTaxon.photoSquareUrl && (
                   <img
                     src={displayedAiCandidate.inaturalistTaxon.photoSquareUrl}
                     alt="iNaturalist taxon"
-                    className="h-16 w-16 rounded-lg object-cover shrink-0"
+                    className="pokedex-photo-frame h-16 w-16 rounded-lg object-cover shrink-0"
                   />
                 )}
                 <div className="min-w-0 space-y-1">
@@ -303,7 +303,7 @@ export function AddSighting() {
                       href={displayedAiCandidate.inaturalistTaxon.taxonUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 hover:text-bark-100"
+                      className="pokedex-inline-link inline-flex items-center gap-1 hover:text-bark-100"
                     >
                       View taxon
                       <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
@@ -313,7 +313,7 @@ export function AddSighting() {
                         href={displayedAiCandidate.inaturalistTaxon.wikipediaUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 hover:text-bark-100"
+                        className="pokedex-inline-link inline-flex items-center gap-1 hover:text-bark-100"
                       >
                         Wikipedia
                         <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
@@ -334,9 +334,9 @@ export function AddSighting() {
                         setSelectedSpecies(candidate.species);
                         setIdentifyError(null);
                       }}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={`pokedex-chip rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                         selectedSpecies?.id === candidate.species.id
-                          ? 'border-bark-500 bg-bark-800 text-bark-100'
+                          ? 'pokedex-chip-active border-bark-500 bg-bark-800 text-bark-100'
                           : 'border-bark-800 bg-bark-900/60 text-bark-300 hover:text-bark-100'
                       }`}
                     >
@@ -352,7 +352,7 @@ export function AddSighting() {
         {identifyError && <p className="text-xs text-bark-300">{identifyError}</p>}
 
         {showSpeciesPicker && (
-          <div className="bg-forest-900 border border-forest-700 rounded-xl overflow-hidden">
+          <div className="pokedex-panel bg-forest-900 border border-forest-700 rounded-xl overflow-hidden">
             <div className="p-2 border-b border-forest-800">
               <input
                 type="search"
@@ -360,7 +360,7 @@ export function AddSighting() {
                 onChange={e => setSpeciesQuery(e.target.value)}
                 placeholder="Search species…"
                 autoFocus
-                className="w-full bg-forest-800 border border-forest-700 rounded-lg px-3 py-2 text-sm text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500"
+                className="pokedex-search-field w-full bg-forest-800 border border-forest-700 rounded-lg px-3 py-2 text-sm text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500"
               />
             </div>
             <div className="max-h-52 overflow-y-auto divide-y divide-forest-800">
@@ -380,7 +380,7 @@ export function AddSighting() {
             </div>
             <button
               onClick={() => { setShowSpeciesPicker(false); setSpeciesQuery(''); }}
-              className="w-full text-sm text-forest-500 hover:text-forest-300 py-2 border-t border-forest-800"
+              className="pokedex-inline-link w-full text-sm text-forest-500 hover:text-forest-300 py-2 border-t border-forest-800"
             >
               Cancel
             </button>
@@ -396,7 +396,7 @@ export function AddSighting() {
             <button
               onClick={captureGps}
               disabled={gpsLoading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-forest-900 border border-forest-700 rounded-xl text-sm font-medium text-forest-300 hover:border-forest-500 transition-colors disabled:opacity-50"
+              className="pokedex-button-card flex items-center gap-2 px-4 py-2.5 bg-forest-900 border border-forest-700 rounded-xl text-sm font-medium text-forest-300 hover:border-forest-500 transition-colors disabled:opacity-50"
             >
               <MapPinIcon className="h-4 w-4" />
               {gpsLoading ? 'Getting location…' : gpsCoords ? 'Update GPS' : 'Capture GPS'}
@@ -421,9 +421,9 @@ export function AddSighting() {
             <button
               key={h}
               onClick={() => toggleHabitat(h)}
-              className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+              className={`pokedex-chip text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
                 selectedHabitats.includes(h)
-                  ? 'bg-forest-600 text-forest-100'
+                  ? 'pokedex-chip-active bg-forest-600 text-forest-100'
                   : 'bg-forest-900 border border-forest-700 text-forest-400 hover:text-forest-300'
               }`}
             >
@@ -439,14 +439,14 @@ export function AddSighting() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setBirdCount(c => Math.max(1, c - 1))}
-            className="h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
+            className="pokedex-counter-button h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
           >
             −
           </button>
           <span className="text-2xl font-bold text-forest-100 w-10 text-center">{birdCount}</span>
           <button
             onClick={() => setBirdCount(c => c + 1)}
-            className="h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
+            className="pokedex-counter-button h-9 w-9 rounded-full bg-forest-800 border border-forest-700 text-forest-200 text-lg font-bold flex items-center justify-center hover:bg-forest-700 transition-colors"
           >
             +
           </button>
@@ -459,7 +459,7 @@ export function AddSighting() {
         <select
           value={weather}
           onChange={e => setWeather(e.target.value)}
-          className="w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 focus:outline-none focus:border-forest-500"
+          className="pokedex-form-field w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 focus:outline-none focus:border-forest-500"
         >
           <option value="">Select weather…</option>
           {WEATHER_OPTIONS.map(w => <option key={w} value={w}>{w}</option>)}
@@ -474,7 +474,7 @@ export function AddSighting() {
           onChange={e => setNotes(e.target.value)}
           rows={3}
           placeholder="Behavior, plumage details, song, location notes…"
-          className="w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500 resize-none"
+          className="pokedex-form-field w-full bg-forest-900 border border-forest-700 rounded-xl px-3 py-2.5 text-sm text-forest-100 placeholder-forest-500 focus:outline-none focus:border-forest-500 resize-none"
         />
       </section>
 
@@ -483,7 +483,7 @@ export function AddSighting() {
         <button
           onClick={() => saveSighting('unknown')}
           disabled={saving}
-          className="flex items-center justify-center gap-2 py-3 bg-bark-800 border border-bark-700 hover:bg-bark-700 text-bark-200 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
+          className="pokedex-button-danger flex items-center justify-center gap-2 py-3 bg-bark-800 border border-bark-700 hover:bg-bark-700 text-bark-200 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
         >
           Save Unknown
         </button>
@@ -491,7 +491,7 @@ export function AddSighting() {
           <button
             onClick={() => saveSighting('pending')}
             disabled={saving}
-            className="flex items-center justify-center gap-2 py-3 bg-forest-900 border border-forest-700 hover:bg-forest-800 text-forest-200 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
+            className="pokedex-button-card flex items-center justify-center gap-2 py-3 bg-forest-900 border border-forest-700 hover:bg-forest-800 text-forest-200 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
           >
             Save for Review
           </button>
@@ -499,7 +499,7 @@ export function AddSighting() {
         <button
           onClick={() => saveSighting('confirmed')}
           disabled={saving || !selectedSpecies}
-          className="flex items-center justify-center gap-2 py-3 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
+          className="pokedex-button-primary flex items-center justify-center gap-2 py-3 bg-forest-700 hover:bg-forest-600 text-forest-100 rounded-xl font-medium text-sm transition-colors disabled:opacity-50"
         >
           <CheckIcon className="h-4 w-4" />
           {saving ? 'Saving…' : 'Save Sighting'}
