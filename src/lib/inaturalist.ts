@@ -70,14 +70,24 @@ async function saveTaxonCacheEntry(species: BirdSpecies, summary: INaturalistTax
     : inaturalistMemoryCacheById.get(summary.taxonId);
   let photoBlob = existing?.photoBlob;
   let photoMimeType = existing?.photoMimeType;
+  let photoSource = existing?.photoSource;
 
   const preferredPhotoUrl = summary.photoMediumUrl ?? summary.photoSquareUrl;
+  const preferredPhotoSource = summary.photoMediumUrl
+    ? 'medium'
+    : summary.photoSquareUrl
+      ? 'square'
+      : undefined;
+  const shouldRefreshPhoto = Boolean(preferredPhotoUrl) && (
+    !photoBlob || (preferredPhotoSource !== undefined && photoSource !== preferredPhotoSource)
+  );
 
-  if (!photoBlob && preferredPhotoUrl) {
+  if (shouldRefreshPhoto && preferredPhotoUrl) {
     const downloadedPhoto = await fetchTaxonPhotoBlob(preferredPhotoUrl);
     if (downloadedPhoto) {
       photoBlob = downloadedPhoto.blob;
       photoMimeType = downloadedPhoto.mimeType;
+      photoSource = preferredPhotoSource;
     }
   }
 
@@ -87,6 +97,7 @@ async function saveTaxonCacheEntry(species: BirdSpecies, summary: INaturalistTax
     cachedAt: Date.now(),
     photoBlob,
     photoMimeType,
+    photoSource,
   };
 
   if (hasIndexedDbSupport()) {
@@ -149,7 +160,10 @@ export async function fetchINaturalistTaxon(species: BirdSpecies): Promise<INatu
 
   const cachedEntry = await getCachedTaxonForSpecies(species);
   if (cachedEntry) {
-    return cachedEntry;
+    const needsPhotoUpgrade = Boolean(cachedEntry.photoMediumUrl) && cachedEntry.photoSource !== 'medium';
+    return needsPhotoUpgrade
+      ? await saveTaxonCacheEntry(species, cachedEntry)
+      : cachedEntry;
   }
 
   const key = cacheKeyForSpecies(species);

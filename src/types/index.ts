@@ -53,6 +53,7 @@ export interface INaturalistTaxonCacheEntry extends INaturalistTaxonSummary {
   cachedAt: number;
   photoBlob?: Blob;
   photoMimeType?: string;
+  photoSource?: 'medium' | 'square';
 }
 
 export interface Sighting {
