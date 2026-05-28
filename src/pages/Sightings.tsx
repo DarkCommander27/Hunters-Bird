@@ -11,12 +11,14 @@ import type { MappableSighting } from '../components/SightingsMap';
 const SightingsMap = lazy(() => import('../components/SightingsMap'));
 
 type FilterStatus = 'all' | 'confirmed' | 'unknown' | 'pending';
+const FILTER_STATUSES: FilterStatus[] = ['all', 'confirmed', 'pending', 'unknown'];
 
 const HABITATS = ['Forest', 'Wetland', 'Grassland', 'Mountain', 'Urban/Suburban', 'River/Stream', 'Lake/Pond'];
 const WEATHER_OPTIONS = ['Clear', 'Partly Cloudy', 'Overcast', 'Light Rain', 'Windy', 'Foggy'];
 
 export function Sightings() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
+  const [mapStatusFilter, setMapStatusFilter] = useState<FilterStatus>('all');
   const [selected, setSelected] = useState<Sighting | null>(null);
   const navigate = useNavigate();
 
@@ -31,12 +33,26 @@ export function Sightings() {
     return sightings.filter(s => s.status === statusFilter);
   }, [sightings, statusFilter]);
 
-  const mappableSightings = useMemo<MappableSighting[]>(
-    () => filtered.filter(
+  const geotaggedSightings = useMemo<MappableSighting[]>(
+    () => (sightings ?? []).filter(
       (sighting): sighting is MappableSighting => sighting.latitude !== undefined && sighting.longitude !== undefined,
     ),
-    [filtered],
+    [sightings],
   );
+
+  const mappableSightings = useMemo<MappableSighting[]>(
+    () => mapStatusFilter === 'all'
+      ? geotaggedSightings
+      : geotaggedSightings.filter((sighting) => sighting.status === mapStatusFilter),
+    [geotaggedSightings, mapStatusFilter],
+  );
+
+  const mapCounts = useMemo<Record<FilterStatus, number>>(() => ({
+    all: geotaggedSightings.length,
+    confirmed: geotaggedSightings.filter((sighting) => sighting.status === 'confirmed').length,
+    pending: geotaggedSightings.filter((sighting) => sighting.status === 'pending').length,
+    unknown: geotaggedSightings.filter((sighting) => sighting.status === 'unknown').length,
+  }), [geotaggedSightings]);
 
   const pendingSightings = useMemo(
     () => sightings?.filter((sighting) => sighting.status === 'pending') ?? [],
@@ -114,7 +130,7 @@ export function Sightings() {
 
       {/* Filter */}
       <div className="flex gap-2">
-        {(['all', 'confirmed', 'pending', 'unknown'] as FilterStatus[]).map(f => (
+        {FILTER_STATUSES.map(f => (
           <button
             key={f}
             onClick={() => setStatusFilter(f)}
@@ -137,16 +153,34 @@ export function Sightings() {
               <p className="text-xs font-semibold uppercase tracking-widest text-forest-500">Map View</p>
               <h2 className="text-lg font-semibold text-forest-100">
                 {mappableSightings.length > 0
-                  ? `${mappableSightings.length} sighting${mappableSightings.length === 1 ? '' : 's'} with GPS pins`
+                  ? `${mappableSightings.length} sighting${mappableSightings.length === 1 ? '' : 's'} shown on the map`
                   : 'No geotagged sightings yet'}
               </h2>
               <p className="text-sm text-forest-400 mt-1">
-                {mappableSightings.length > 0
-                  ? 'OpenStreetMap tiles with local sighting markers. Select a pin to jump into the detail view.'
+                {geotaggedSightings.length > 0
+                  ? 'OpenStreetMap tiles with local sighting markers. Filter pins by review status without changing the list below.'
                   : 'Capture GPS when logging a bird to plot sightings on the map.'}
               </p>
             </div>
           </div>
+
+          {geotaggedSightings.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {FILTER_STATUSES.map((filterValue) => (
+                <button
+                  key={filterValue}
+                  onClick={() => setMapStatusFilter(filterValue)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+                    mapStatusFilter === filterValue
+                      ? 'border-forest-500 bg-forest-700 text-forest-100'
+                      : 'border-forest-700 bg-forest-950 text-forest-300 hover:text-forest-100'
+                  }`}
+                >
+                  {filterValue} pins ({mapCounts[filterValue]})
+                </button>
+              ))}
+            </div>
+          )}
 
           {mappableSightings.length > 0 ? (
             <Suspense
@@ -158,6 +192,10 @@ export function Sightings() {
             >
               <SightingsMap sightings={mappableSightings} onSelect={setSelected} />
             </Suspense>
+          ) : geotaggedSightings.length > 0 ? (
+            <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+              No geotagged sightings match the current map filter.
+            </div>
           ) : (
             <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
               Sightings with saved GPS coordinates will appear here.
