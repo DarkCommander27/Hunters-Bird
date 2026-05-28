@@ -1,5 +1,7 @@
 # Hunters-Bird 🦅
 
+[![Validate Region Pack Data](https://github.com/darkcommander27/Hunters-Bird/actions/workflows/validate-region-packs.yml/badge.svg)](https://github.com/darkcommander27/Hunters-Bird/actions/workflows/validate-region-packs.yml)
+
 A rugged, offline-capable birding PWA for hikers and naturalists. Works in the field — no account, no cloud required.
 
 ## Features
@@ -9,6 +11,7 @@ A rugged, offline-capable birding PWA for hikers and naturalists. Works in the f
 - **Regional bird packs** — download U.S. region packs; Appalachia included by default (24 species)
 - **Bird Guide** — search and browse regional species with habitat and taxonomy filters
 - **Log Sightings** — photo capture/upload, GPS coordinates, habitat tags, weather, bird count, notes
+- **Sightings map** — OpenStreetMap-powered view of geotagged sightings with tap-to-open detail
 - **Unknown save + re-identify** — save unidentified birds and come back to them later
 - **Life List** — automatic unique-species summary across all confirmed sightings
 - **Dark mode** — nature-inspired dark theme, togglable from Settings
@@ -24,6 +27,7 @@ A rugged, offline-capable birding PWA for hikers and naturalists. Works in the f
 | Styles | Tailwind CSS v4 |
 | Routing | React Router v7 |
 | Local DB | Dexie (IndexedDB) |
+| Maps | Leaflet + OpenStreetMap |
 | PWA | vite-plugin-pwa + Workbox |
 | Icons | Heroicons |
 
@@ -109,7 +113,6 @@ src/
 ## Roadmap / Follow-up
 
 - [ ] Online AI bird identification integration (pluggable provider interface ready)
-- [ ] Map view of sightings
 - [ ] Richer species data per region pack (photos, audio, similar species)
 - [ ] State-level filtering inside packs
 - [ ] Export as CSV / share life list

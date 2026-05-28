@@ -61,3 +61,23 @@ body {
 
 /* Smooth scrolling */
 html { scroll-behavior: smooth; }
+
+.leaflet-container {
+  font: inherit;
+  background: var(--color-forest-950);
+}
+
+.sighting-map .leaflet-popup-content-wrapper,
+.sighting-map .leaflet-popup-tip {
+  background: var(--color-forest-900);
+  color: var(--color-forest-100);
+}
+
+.sighting-map .leaflet-control-attribution {
+  background: rgb(26 31 20 / 82%);
+  color: var(--color-forest-300);
+}
+
+.sighting-map .leaflet-control-attribution a {
+  color: var(--color-forest-200);
+}

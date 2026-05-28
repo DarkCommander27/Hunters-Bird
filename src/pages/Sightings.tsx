@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TrashIcon, PencilIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { db } from '../db/database';
@@ -6,6 +6,9 @@ import { getCachedINaturalistTaxonEntry, getINaturalistPhotoUrl } from '../lib/i
 import { formatDate, formatTime } from '../lib/utils';
 import type { Sighting, PhotoAsset } from '../types';
 import { useNavigate } from 'react-router-dom';
+import type { MappableSighting } from '../components/SightingsMap';
+
+const SightingsMap = lazy(() => import('../components/SightingsMap'));
 
 type FilterStatus = 'all' | 'confirmed' | 'unknown' | 'pending';
 
@@ -27,6 +30,13 @@ export function Sightings() {
     if (statusFilter === 'all') return sightings;
     return sightings.filter(s => s.status === statusFilter);
   }, [sightings, statusFilter]);
+
+  const mappableSightings = useMemo<MappableSighting[]>(
+    () => filtered.filter(
+      (sighting): sighting is MappableSighting => sighting.latitude !== undefined && sighting.longitude !== undefined,
+    ),
+    [filtered],
+  );
 
   const pendingSightings = useMemo(
     () => sightings?.filter((sighting) => sighting.status === 'pending') ?? [],
@@ -120,6 +130,42 @@ export function Sightings() {
         <span className="ml-auto text-xs text-forest-500 self-center">{filtered.length} sightings</span>
       </div>
 
+      {filtered.length > 0 && (
+        <section className="space-y-3 rounded-2xl border border-forest-800 bg-forest-900/70 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-forest-500">Map View</p>
+              <h2 className="text-lg font-semibold text-forest-100">
+                {mappableSightings.length > 0
+                  ? `${mappableSightings.length} sighting${mappableSightings.length === 1 ? '' : 's'} with GPS pins`
+                  : 'No geotagged sightings yet'}
+              </h2>
+              <p className="text-sm text-forest-400 mt-1">
+                {mappableSightings.length > 0
+                  ? 'OpenStreetMap tiles with local sighting markers. Select a pin to jump into the detail view.'
+                  : 'Capture GPS when logging a bird to plot sightings on the map.'}
+              </p>
+            </div>
+          </div>
+
+          {mappableSightings.length > 0 ? (
+            <Suspense
+              fallback={(
+                <div className="rounded-xl border border-forest-800 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+                  Loading map…
+                </div>
+              )}
+            >
+              <SightingsMap sightings={mappableSightings} onSelect={setSelected} />
+            </Suspense>
+          ) : (
+            <div className="rounded-xl border border-dashed border-forest-700 bg-forest-950/70 px-4 py-8 text-center text-sm text-forest-400">
+              Sightings with saved GPS coordinates will appear here.
+            </div>
+          )}
+        </section>
+      )}
+
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-16 text-center">
           <span className="text-4xl">🔭</span>
@@ -201,21 +247,22 @@ function SightingDetail({
   const thumbUrl = photo ? URL.createObjectURL(photo.blob) : null;
   const selectedSpecies = allSpecies?.find((species) => species.id === draftSpeciesId);
   const [taxonPhotoUrl, setTaxonPhotoUrl] = useState<string | null>(null);
+  const identificationTaxon = sighting.identificationTaxon;
 
   useEffect(() => {
     let disposed = false;
     let objectUrl: string | null = null;
 
     async function loadTaxonPhoto() {
-      if (!sighting.identificationTaxon?.taxonId) {
+      if (!identificationTaxon?.taxonId) {
         setTaxonPhotoUrl(null);
         return;
       }
 
-      const entry = await getCachedINaturalistTaxonEntry(sighting.identificationTaxon.taxonId);
+      const entry = await getCachedINaturalistTaxonEntry(identificationTaxon.taxonId);
       if (disposed) return;
 
-      objectUrl = getINaturalistPhotoUrl(sighting.identificationTaxon, entry);
+      objectUrl = getINaturalistPhotoUrl(identificationTaxon, entry);
       setTaxonPhotoUrl(objectUrl);
     }
 
@@ -227,11 +274,7 @@ function SightingDetail({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [
-    sighting.identificationTaxon?.taxonId,
-    sighting.identificationTaxon?.photoMediumUrl,
-    sighting.identificationTaxon?.photoSquareUrl,
-  ]);
+  }, [identificationTaxon]);
 
   function toggleHabitat(habitat: string) {
     setDraftHabitats((current) => (
